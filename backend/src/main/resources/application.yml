@@ -1,0 +1,81 @@
+spring:
+  application:
+    name: execution-os
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:${DATABASE_URL:jdbc:postgresql://localhost:5432/executionos}}
+    username: ${DATABASE_USERNAME:executionos}
+    password: ${DATABASE_PASSWORD:executionos}
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      minimum-idle: 2
+      initialization-fail-timeout: -1
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    out-of-order: false
+    connect-retries: 10
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/plain,text/css,application/javascript
+    min-response-size: 1024
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+executionos:
+  cors-origins: ${CORS_ORIGINS:http://localhost:3000}
+  # Used only to build the link embedded in candidate invitation emails
+  # (e.g. https://app.yourcompany.com/candidate?token=...). Should normally
+  # match the first origin in cors-origins.
+  frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:3000}
+  uploads:
+    max-file-size-bytes: ${MAX_UPLOAD_BYTES:52428800}
+    allowed-content-types: ${ALLOWED_UPLOAD_TYPES:application/pdf,application/zip,application/x-zip-compressed,image/png,image/jpeg,image/webp,text/html,text/markdown,text/plain,video/mp4,application/json}
+    virus-scan-enabled: ${VIRUS_SCAN_ENABLED:false}
+  rate-limit:
+    capacity: ${RATE_LIMIT_CAPACITY:120}
+    refill-per-minute: ${RATE_LIMIT_REFILL_PER_MINUTE:120}
+  jwt:
+    issuer: execution-os
+    secret: ${JWT_SECRET:dev-only-change-this-secret-to-at-least-32-characters}
+    access-token-minutes: 15
+    refresh-token-days: 7
+  swagger:
+    username: ${SWAGGER_USERNAME:admin}
+    password: ${SWAGGER_PASSWORD:change-this-swagger-password}
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}
+  mail:
+    host: ${SMTP_HOST:}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

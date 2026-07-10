@@ -1,0 +1,602 @@
+[
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-001",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Basic NRQL",
+    "title": "Count transactions in the last hour",
+    "prompt": "Write an NRQL query that counts the number of `Transaction` events in the last 1 hour.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT count(*) FROM Transaction SINCE 1 hour ago"
+    },
+    "explanation": "NRQL is deliberately SQL-like: `SELECT count(*) FROM <eventType>` counts matching events, and `SINCE 1 hour ago` bounds the time window relative to now.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 1
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-002",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "WHERE filter",
+    "title": "Errors for a specific application",
+    "prompt": "Write an NRQL query that returns all `TransactionError` events where `appName` is \"checkout-service\" in the last 30 minutes.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT * FROM TransactionError WHERE appName = 'checkout-service' SINCE 30 minutes ago"
+    },
+    "explanation": "`WHERE` filters events by attribute value exactly like SQL, and string literals use single quotes. `SELECT *` returns all attributes captured on the event, useful for initial exploration.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 2
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-003",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "average()",
+    "title": "Average response time",
+    "prompt": "Write an NRQL query for the average `duration` of `Transaction` events over the last 24 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT average(duration) FROM Transaction SINCE 24 hours ago"
+    },
+    "explanation": "`average()` is one of NRQL's built-in aggregate functions, applied to a numeric attribute (`duration`, typically in seconds) captured on each event.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 3
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-004",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "percentage()",
+    "title": "Error rate percentage",
+    "prompt": "Write an NRQL query that shows what percentage of `Transaction` events have `error` = true, over the last hour.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT percentage(count(*), WHERE error IS true) FROM Transaction SINCE 1 hour ago"
+    },
+    "explanation": "`percentage(count(*), WHERE <condition>)` computes what fraction of the total event count matches the inner condition \u2014 the standard NRQL pattern for error rate, conversion rate, and similar ratio metrics.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 4
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-005",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "FACET",
+    "title": "Transaction count by application",
+    "prompt": "Write an NRQL query that shows the count of `Transaction` events broken down by `appName`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT count(*) FROM Transaction FACET appName SINCE 1 day ago"
+    },
+    "explanation": "`FACET` is NRQL's equivalent of SQL's `GROUP BY` \u2014 it splits the aggregate result into one row per distinct value of the faceted attribute.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 5
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-006",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "LIMIT",
+    "title": "Top 5 slowest transactions",
+    "prompt": "Write an NRQL query that returns the 5 individual `Transaction` events with the highest `duration` in the last hour.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name, duration FROM Transaction SINCE 1 hour ago ORDER BY duration DESC LIMIT 5"
+    },
+    "explanation": "`ORDER BY duration DESC` sorts the raw events (not an aggregate) by duration descending, and `LIMIT 5` caps the result to the top 5 rows \u2014 directly analogous to SQL.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 6
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-007",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "TIMESERIES",
+    "title": "Response time trend chart",
+    "prompt": "Write an NRQL query that charts the average `duration` of `Transaction` events in 5-minute buckets over the last 6 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT average(duration) FROM Transaction SINCE 6 hours ago TIMESERIES 5 minutes"
+    },
+    "explanation": "`TIMESERIES 5 minutes` buckets the aggregate into 5-minute time slices, turning a single-number aggregate into a trend line \u2014 the NRQL equivalent of Splunk's `timechart`.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 7
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-008",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "percentile()",
+    "title": "P95 latency by endpoint",
+    "prompt": "Write an NRQL query that shows the 95th percentile `duration` for `Transaction` events, faceted by `name` (the endpoint), over the last hour.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT percentile(duration, 95) FROM Transaction FACET name SINCE 1 hour ago"
+    },
+    "explanation": "`percentile(duration, 95)` computes the value below which 95% of durations fall \u2014 a far more useful SLO metric than average, since it captures tail latency that averages hide.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 8
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-009",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Alert condition NRQL",
+    "title": "NRQL for a high-error-rate alert",
+    "prompt": "Write the NRQL query you'd use as the signal for a NRQL alert condition that should fire when the error rate for `appName = 'payments-api'` exceeds 5% over a 5-minute window.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT percentage(count(*), WHERE error IS true) FROM Transaction WHERE appName = 'payments-api'"
+    },
+    "explanation": "NRQL alert conditions run this query on a rolling window (configured separately as the aggregation window, e.g. 5 minutes) and compare the returned value against a threshold (here, > 5) defined in the alert policy, not inside the query itself.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 9
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-010",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "WHERE + FACET combined",
+    "title": "Slow endpoints for one host",
+    "prompt": "Write an NRQL query that shows the average `duration` for `Transaction` events on `host = 'web-03'`, faceted by transaction `name`, for the last 3 hours, showing only the top 10.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT average(duration) FROM Transaction WHERE host = 'web-03' FACET name SINCE 3 hours ago LIMIT 10"
+    },
+    "explanation": "`FACET name` groups by endpoint, and NRQL's default facet behavior automatically ranks groups by the primary aggregate \u2014 `LIMIT 10` then keeps only the top 10 highest-average-duration endpoints for that host.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 10
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-011",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Compound WHERE",
+    "title": "Filter by multiple conditions",
+    "prompt": "Write an NRQL query that finds `TransactionError` events where `appName` is \"checkout-service\" AND `httpResponseCode` is either '500' or '503', in the last hour.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT * FROM TransactionError WHERE appName = 'checkout-service' AND httpResponseCode IN ('500', '503') SINCE 1 hour ago"
+    },
+    "explanation": "`IN (...)` is a concise way to express \"equals one of these values\" instead of chaining multiple `OR` conditions, combined here with `AND` to require both the app name and the response code condition to be true.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 11
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-012",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Deployment markers",
+    "title": "Compare error rate before/after a deploy",
+    "prompt": "Write an NRQL query that compares the error rate for `appName = 'checkout-service'` in the hour before now against the same metric from one day prior, using COMPARE WITH.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT percentage(count(*), WHERE error IS true) FROM Transaction WHERE appName = 'checkout-service' SINCE 1 hour ago COMPARE WITH 1 day ago"
+    },
+    "explanation": "`COMPARE WITH` runs the same query for an equivalent time window shifted back by the given offset and returns both results side by side \u2014 a quick way to check whether a metric has regressed relative to the same period yesterday, without writing two separate queries.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 12
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-HARD-013",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Nested aggregation subquery",
+    "title": "Apps whose average duration doubled week over week",
+    "prompt": "Write an NRQL query approach to identify applications where this week's average transaction duration is more than double last week's average, using two queries you'd compare (NRQL does not support true subqueries across time windows in one statement).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "-- Query 1: this week\nSELECT average(duration) FROM Transaction FACET appName SINCE 7 days ago\n\n-- Query 2: prior week for comparison\nSELECT average(duration) FROM Transaction FACET appName SINCE 14 days ago UNTIL 7 days ago\n\n-- Compare the two result sets (e.g. in a dashboard widget or via the NerdGraph API)\n-- to flag any appName where week1_avg > 2 * week2_avg"
+    },
+    "explanation": "NRQL aggregates one time window per query and doesn't support correlated subqueries across two different time ranges in a single statement, so the correct approach is to run two bounded queries (`SINCE 7 days ago` vs `SINCE 14 days ago UNTIL 7 days ago`) and diff the results programmatically, typically via the NerdGraph GraphQL API for automated anomaly checks.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 13
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-HARD-014",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Custom events + JOIN-like correlation",
+    "title": "Correlate deploy markers with error spikes",
+    "prompt": "Given custom `Deployment` events (with `appName`, `timestamp`, `revision`) and `TransactionError` events, describe an NRQL-based approach to detect whether error rates spike within 15 minutes after any deployment.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "-- Step 1: find deployments\nSELECT timestamp, revision FROM Deployment WHERE appName = 'checkout-service' SINCE 1 day ago\n\n-- Step 2: for each deployment timestamp T, run:\nSELECT percentage(count(*), WHERE error IS true) FROM Transaction\nWHERE appName = 'checkout-service' SINCE <T> UNTIL <T + 15 minutes>\n\n-- Step 3 (automation): script this pairing via NerdGraph, comparing each\n-- post-deploy error rate to the appName's rolling baseline error rate."
+    },
+    "explanation": "Since NRQL has no native join between event types, correlating deploys with error spikes means querying `Deployment` events to get timestamps, then issuing one time-bounded `Transaction` error-rate query per deployment window \u2014 typically automated with the NerdGraph API rather than run by hand, which is exactly the pattern New Relic's own Change Tracking feature implements internally.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 14
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-HARD-015",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Dashboard-as-code",
+    "title": "Provision an NRQL dashboard via NerdGraph",
+    "prompt": "Write the shape of a NerdGraph GraphQL mutation you would use to programmatically create a dashboard widget showing average transaction duration, rather than building it by hand in the UI.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "mutation {\n  dashboardCreate(accountId: 123456, dashboard: {\n    name: \"Checkout Service Health\"\n    pages: [{\n      name: \"Overview\"\n      widgets: [{\n        title: \"Avg Duration\"\n        visualization: { id: \"viz.line\" }\n        rawConfiguration: {\n          nrqlQueries: [{\n            accountId: 123456\n            query: \"SELECT average(duration) FROM Transaction WHERE appName = 'checkout-service' TIMESERIES\"\n          }]\n        }\n      }]\n    }]\n  }) {\n    entityResult { guid }\n  }\n}"
+    },
+    "explanation": "New Relic dashboards are fully manageable as code via the NerdGraph GraphQL API's `dashboardCreate` mutation, which lets teams version-control dashboard definitions (widgets, layout, and their embedded NRQL queries) in git and apply them through CI/CD instead of manual UI configuration \u2014 the same \"observability as code\" pattern used for Terraform-managed New Relic resources.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 15
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-016",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "COUNT with WHERE",
+    "title": "Count errors for one app",
+    "prompt": "Write an NRQL query to count `TransactionError` events for `appName = 'inventory-service'` in the last 6 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT count(*) FROM TransactionError WHERE appName = 'inventory-service' SINCE 6 hours ago"
+    },
+    "explanation": "Combining `WHERE` with `count(*)` is the most basic NRQL aggregate pattern \u2014 filter to the relevant events, then count how many remain.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 16
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-017",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "min/max",
+    "title": "Min and max duration",
+    "prompt": "Write an NRQL query showing the minimum and maximum `duration` for `Transaction` events in the last hour.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT min(duration), max(duration) FROM Transaction SINCE 1 hour ago"
+    },
+    "explanation": "`min()` and `max()` can be selected together in a single query, computed in one pass over the same event set, rather than needing two separate queries.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 17
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-018",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "uniqueCount()",
+    "title": "Count distinct users",
+    "prompt": "Write an NRQL query showing how many distinct `userId` values appear in `PageView` events in the last day.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT uniqueCount(userId) FROM PageView SINCE 1 day ago"
+    },
+    "explanation": "`uniqueCount()` counts distinct values of an attribute across matching events \u2014 the NRQL equivalent of `COUNT(DISTINCT column)` in SQL.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 18
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-019",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "NOT conditions",
+    "title": "Exclude a specific host",
+    "prompt": "Write an NRQL query for `Transaction` events where `appName = 'checkout-service'` but `host` is NOT 'staging-01', in the last hour.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT * FROM Transaction WHERE appName = 'checkout-service' AND host != 'staging-01' SINCE 1 hour ago"
+    },
+    "explanation": "`!=` (or the equivalent `<>`) excludes rows matching the given value, here filtering out one specific host from an otherwise broader query.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 19
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-020",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "LIKE pattern matching",
+    "title": "Find transactions matching a name pattern",
+    "prompt": "Write an NRQL query that finds `Transaction` events where `name` contains the substring \"checkout\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT * FROM Transaction WHERE name LIKE '%checkout%' SINCE 1 hour ago"
+    },
+    "explanation": "`LIKE` with `%` wildcards on both sides matches the substring anywhere within the field value, similar to SQL's `LIKE '%checkout%'`.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 20
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-EASY-021",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "SINCE/UNTIL",
+    "title": "Query a specific past window",
+    "prompt": "Write an NRQL query for `Transaction` event count between 2 days ago and 1 day ago (not including the most recent day).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT count(*) FROM Transaction SINCE 2 days ago UNTIL 1 day ago"
+    },
+    "explanation": "`SINCE` and `UNTIL` together bound a specific historical window rather than always ending at \"now\" \u2014 useful for looking at a fixed past period without including recent, possibly-still-changing data.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 21
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-022",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "FACET with LIMIT and ORDER",
+    "title": "Slowest 5 endpoints by average duration",
+    "prompt": "Write an NRQL query showing the 5 endpoints (by `name`) with the highest average `duration`, over the last 3 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT average(duration) FROM Transaction FACET name SINCE 3 hours ago LIMIT 5"
+    },
+    "explanation": "When faceting on an aggregate, NRQL automatically orders facet groups by that aggregate value descending by default, so `LIMIT 5` here naturally returns the 5 slowest endpoints without needing an explicit ORDER BY on the faceted result.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 22
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-023",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Multiple aggregates + FACET",
+    "title": "Count and error rate per app in one query",
+    "prompt": "Write an NRQL query showing, for each `appName`, both the total transaction count and the error percentage, in the last hour.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT count(*), percentage(count(*), WHERE error IS true) FROM Transaction FACET appName SINCE 1 hour ago"
+    },
+    "explanation": "Multiple aggregate expressions can be selected together in one query, each computed per facet group \u2014 avoiding the need to run separate queries for volume and error rate and then joining them manually.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 23
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-024",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Histogram",
+    "title": "Latency distribution histogram",
+    "prompt": "Write an NRQL query producing a histogram of `duration` values for `Transaction` events over the last hour, with 20 buckets.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT histogram(duration, 20) FROM Transaction SINCE 1 hour ago"
+    },
+    "explanation": "`histogram(field, bucketCount)` buckets numeric values into the given number of ranges and counts how many events fall in each \u2014 useful for seeing the shape of a latency distribution (e.g. bimodal patterns an average alone would hide).",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 24
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-025",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Apdex",
+    "title": "Query Apdex score for an application",
+    "prompt": "Write an NRQL query computing the Apdex score for `appName = 'checkout-service'` using a satisfying threshold of 0.5 seconds, over the last hour.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT apdex(duration, 0.5) FROM Transaction WHERE appName = 'checkout-service' SINCE 1 hour ago"
+    },
+    "explanation": "`apdex(field, threshold)` computes New Relic's standard user-satisfaction score (0-1) by classifying each transaction as satisfying (\u2264T), tolerating (\u22644T), or frustrating (>4T) relative to the given threshold T, then weighting them into a single score.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 25
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-026",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Custom attributes",
+    "title": "Query on a custom-instrumented attribute",
+    "prompt": "Given transactions instrumented with a custom attribute `customerTier` ('free', 'pro', 'enterprise'), write an NRQL query showing average duration per tier.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT average(duration) FROM Transaction FACET customerTier SINCE 1 day ago"
+    },
+    "explanation": "Custom attributes added via the New Relic agent API (e.g. `newrelic.addCustomAttribute()`) become queryable NRQL fields just like built-in ones, letting you facet or filter by business-specific dimensions such as customer tier.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 26
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-MEDIUM-027",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Synthetics results",
+    "title": "Check synthetic monitor success rate",
+    "prompt": "Write an NRQL query showing the success rate of a Synthetic monitor named \"Homepage Check\" over the last 24 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT percentage(count(*), WHERE result = 'SUCCESS') FROM SyntheticCheck WHERE monitorName = 'Homepage Check' SINCE 24 hours ago"
+    },
+    "explanation": "Synthetic monitor results are recorded as `SyntheticCheck` (or `SyntheticRequest`) events with a `result` attribute; the same `percentage(count(*), WHERE ...)` pattern used for error rates applies equally well here to compute uptime/success rate.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 27
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-HARD-028",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Baseline alerting",
+    "title": "NRQL for anomaly-based alert condition",
+    "prompt": "Describe the NRQL query and alert type you'd use to detect when response time for `appName = 'checkout-service'` deviates significantly from its own historical baseline, rather than a fixed threshold.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Query: SELECT average(duration) FROM Transaction WHERE appName = 'checkout-service'\nAlert type: NRQL condition with 'Anomaly' signal type (baseline deviation), configured with a sensitivity level (low/medium/high) rather than a static threshold value."
+    },
+    "explanation": "New Relic's baseline/anomaly alert conditions compare the live query result against a dynamically-learned historical baseline for that same signal, rather than a hardcoded number \u2014 appropriate when normal traffic has daily/weekly seasonality that would make a fixed threshold either too noisy or too insensitive at different times.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 28
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-HARD-029",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Cross-entity correlation",
+    "title": "Correlate infrastructure and APM data",
+    "prompt": "Write an NRQL approach to check whether elevated `Transaction` duration for `appName = 'checkout-service'` correlates with high CPU on its underlying hosts, using both APM and Infrastructure events.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "-- APM side\nSELECT average(duration) FROM Transaction WHERE appName = 'checkout-service' TIMESERIES 5 minutes\n\n-- Infrastructure side, same hosts\nSELECT average(cpuPercent) FROM SystemSample WHERE hostname IN (<hosts running checkout-service>) TIMESERIES 5 minutes\n\n-- Compare the two TIMESERIES results (e.g. overlaid in a dashboard) to visually or programmatically correlate spikes"
+    },
+    "explanation": "APM (`Transaction`) and Infrastructure (`SystemSample`) events live in different event types with no built-in join, so cross-entity correlation means running two `TIMESERIES` queries over the same time window and comparing them \u2014 usually visually via overlaid dashboard widgets, since NRQL itself has no cross-event-type join operator for this.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 29
+  },
+  {
+    "subjectSlug": "new-relic",
+    "subjectName": "New Relic",
+    "code": "NEWRELIC-COD-HARD-030",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "NRQL query cost & optimization",
+    "title": "Optimize an expensive faceted query",
+    "prompt": "A dashboard query `SELECT count(*) FROM Transaction FACET name, host, appName SINCE 30 days ago` times out. Rewrite it to be more efficient and explain the key change.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT count(*) FROM Transaction FACET appName SINCE 30 days ago\n-- then drill into name/host only for the specific appName of interest, over a shorter window,\n-- e.g.: SELECT count(*) FROM Transaction WHERE appName = 'checkout-service' FACET name, host SINCE 1 day ago"
+    },
+    "explanation": "Faceting on 3 high-cardinality dimensions (`name`, `host`, `appName`) over 30 days forces New Relic to compute an enormous number of unique group combinations, which is what times out; the fix is to reduce cardinality by faceting on one broad dimension first (appName) and only drill into the finer-grained facets (name, host) after narrowing the time range and filter \u2014 the same \"aggregate broad first, drill down second\" principle that applies to expensive GROUP BY queries in any analytics system.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 30
+  }
+]

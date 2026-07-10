@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: skillforge-backend
+    metrics_path: /actuator/prometheus
+    basic_auth:
+      # Matches SWAGGER_USERNAME/SWAGGER_PASSWORD from backend/.env -- /actuator/prometheus
+      # now shares that same Basic-Auth-protected filter chain (see SecurityConfig.java),
+      # since a Prometheus scraper has no way to attach a JWT. If you change
+      # SWAGGER_PASSWORD, update the value below to match.
+      username: admin
+      password: change-this-swagger-password
+    static_configs:
+      - targets: ["backend:8080"]

@@ -1,0 +1,602 @@
+[
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-001",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "SELECT / WHERE",
+    "title": "Employees earning above a threshold",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query to list the `name` and `salary` of all employees earning more than 50000, ordered by salary descending.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name, salary FROM employees WHERE salary > 50000 ORDER BY salary DESC;"
+    },
+    "explanation": "`WHERE` filters rows before they're returned, and `ORDER BY ... DESC` sorts the result set from highest to lowest salary.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 1
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-002",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "COUNT / GROUP BY",
+    "title": "Employee count per department",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query to show each `department_id` with the number of employees in it.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT department_id, COUNT(*) AS employee_count\nFROM employees\nGROUP BY department_id;"
+    },
+    "explanation": "`GROUP BY department_id` collapses rows into one group per department, and `COUNT(*)` counts the rows in each group \u2014 the standard pattern for \"how many X per Y\" questions.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 2
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-003",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "JOIN",
+    "title": "Employee names with department names",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query that returns each employee's `name` alongside their department's `name`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT e.name AS employee_name, d.name AS department_name\nFROM employees e\nJOIN departments d ON e.department_id = d.id;"
+    },
+    "explanation": "An inner `JOIN` matches each employee row to its department row using the foreign key `department_id = id`. Table aliases (`e`, `d`) keep the query readable when both tables have a `name` column.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 3
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-004",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "NULL handling",
+    "title": "Employees without a manager",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query to find all employees who have no manager assigned.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name FROM employees WHERE manager_id IS NULL;"
+    },
+    "explanation": "NULL means \"unknown/absent\" and can never be compared with `=`; SQL requires the special `IS NULL` predicate to test for it. `manager_id = NULL` would silently return zero rows.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 4
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-005",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "DISTINCT",
+    "title": "Unique department IDs in use",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query to list every distinct `department_id` that has at least one employee.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT DISTINCT department_id FROM employees;"
+    },
+    "explanation": "`DISTINCT` removes duplicate rows from the result set after the `SELECT` list is evaluated, so each department_id value appears only once even if hundreds of employees share it.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 5
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-006",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "LIKE",
+    "title": "Employees whose name starts with 'A'",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query to find all employees whose name starts with the letter 'A'.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name FROM employees WHERE name LIKE 'A%';"
+    },
+    "explanation": "`LIKE` performs pattern matching where `%` matches any sequence of zero or more characters. `'A%'` therefore matches any string that begins with 'A'.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 6
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-007",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "HAVING",
+    "title": "Departments with more than 5 employees",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query to list department IDs that have more than 5 employees.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT department_id, COUNT(*) AS cnt\nFROM employees\nGROUP BY department_id\nHAVING COUNT(*) > 5;"
+    },
+    "explanation": "`WHERE` filters individual rows before grouping, but `HAVING` filters *after* aggregation \u2014 it's the only way to filter on an aggregate like `COUNT(*)`.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 7
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-008",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Self Join",
+    "title": "Employees and their manager's name",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query that lists each employee's `name` next to their manager's `name` (employees with no manager should still appear, with a NULL manager name).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT e.name AS employee_name, m.name AS manager_name\nFROM employees e\nLEFT JOIN employees m ON e.manager_id = m.id;"
+    },
+    "explanation": "This is a self-join: the same `employees` table is joined to itself under two aliases (`e` for the employee, `m` for their manager). `LEFT JOIN` (instead of `JOIN`) keeps employees with no manager in the results, filling `manager_name` with NULL.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 8
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-009",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Subquery",
+    "title": "Employees earning above department average",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query that lists employees whose salary is greater than the average salary of their own department.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT e.name, e.salary, e.department_id\nFROM employees e\nWHERE e.salary > (\n  SELECT AVG(e2.salary)\n  FROM employees e2\n  WHERE e2.department_id = e.department_id\n);"
+    },
+    "explanation": "This is a correlated subquery \u2014 the inner query re-runs for every outer row, computing that specific department's average salary using `e.department_id` from the outer query, then compares it to that row's own salary.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 9
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-010",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Window Functions",
+    "title": "Rank employees by salary within department",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query that shows each employee's `name`, `department_id`, and their salary rank within their department (1 = highest paid).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name, department_id, salary,\n  RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) AS salary_rank\nFROM employees;"
+    },
+    "explanation": "`PARTITION BY department_id` restarts the ranking for each department, and `ORDER BY salary DESC` within that partition makes rank 1 the highest earner. Unlike `GROUP BY`, window functions keep every individual row in the output.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 10
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-011",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Date Functions",
+    "title": "Employees hired in the last 90 days",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query to list employees hired within the last 90 days from today.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name, hire_date\nFROM employees\nWHERE hire_date >= CURRENT_DATE - INTERVAL '90 days';"
+    },
+    "explanation": "`CURRENT_DATE - INTERVAL '90 days'` computes a rolling cutoff date 90 days before today (PostgreSQL syntax), and the `WHERE` clause keeps only rows hired on or after that date.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 11
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-012",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "CASE expressions",
+    "title": "Categorize employees by salary band",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query that shows each employee's `name` and a `salary_band` column: 'Low' if salary < 40000, 'Mid' if between 40000 and 80000 inclusive, otherwise 'High'.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name,\n  CASE\n    WHEN salary < 40000 THEN 'Low'\n    WHEN salary BETWEEN 40000 AND 80000 THEN 'Mid'\n    ELSE 'High'\n  END AS salary_band\nFROM employees;"
+    },
+    "explanation": "`CASE ... WHEN ... THEN ... ELSE ... END` is SQL's inline conditional expression, evaluated top-to-bottom per row \u2014 the first matching `WHEN` wins, and `ELSE` catches everything else.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 12
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-HARD-013",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "CTE + Window Function",
+    "title": "Second-highest salary per department",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query using a CTE that returns the name and salary of the second-highest-paid employee in each department.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "WITH ranked AS (\n  SELECT name, department_id, salary,\n    DENSE_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) AS rnk\n  FROM employees\n)\nSELECT name, department_id, salary\nFROM ranked\nWHERE rnk = 2;"
+    },
+    "explanation": "`DENSE_RANK()` assigns rank 2 to the second-distinct salary value even if there are ties for first, which plain `ROW_NUMBER()` would not do correctly. The CTE (`WITH ranked AS (...)`) computes the ranking once, then the outer query simply filters `rnk = 2`.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 13
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-HARD-014",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Recursive CTE",
+    "title": "Full management chain for an employee",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a recursive query that, given an employee id of 42, returns the full chain of managers above them, from their direct manager up to the top of the org.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "WITH RECURSIVE chain AS (\n  SELECT id, name, manager_id, 1 AS level\n  FROM employees\n  WHERE id = 42\n  UNION ALL\n  SELECT e.id, e.name, e.manager_id, c.level + 1\n  FROM employees e\n  JOIN chain c ON e.id = c.manager_id\n)\nSELECT * FROM chain WHERE id <> 42 ORDER BY level;"
+    },
+    "explanation": "The anchor member selects the starting employee; the recursive member repeatedly joins `employees` to the growing `chain` result on `manager_id`, climbing one level up the org each iteration, until no more managers are found and the recursion terminates.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 14
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-HARD-015",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Query Tuning",
+    "title": "Diagnose a slow query with EXPLAIN",
+    "prompt": "A query filtering `employees` by `department_id` is doing a full table scan on a 5-million-row table. Write the command to inspect its execution plan, and state the single most likely fix.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "EXPLAIN ANALYZE\nSELECT * FROM employees WHERE department_id = 7;\n\n-- Fix: CREATE INDEX idx_employees_department_id ON employees(department_id);"
+    },
+    "explanation": "`EXPLAIN ANALYZE` runs the query and shows the actual plan and timings the planner chose, revealing whether it's doing a Seq Scan instead of an Index Scan. If `department_id` has no index, the planner has no choice but to scan every row, so adding a B-tree index on that column is the standard fix.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 15
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-016",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "INSERT",
+    "title": "Insert a new employee",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a statement to insert a new employee named 'Priya Rao' into department_id 3 with salary 55000, hired today.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "INSERT INTO employees (name, department_id, salary, hire_date)\nVALUES ('Priya Rao', 3, 55000, CURRENT_DATE);"
+    },
+    "explanation": "`INSERT INTO table (columns) VALUES (...)` explicitly lists which columns are being set, which is safer than omitting the column list since it doesn't depend on the table's physical column order.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 16
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-017",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "UPDATE",
+    "title": "Give a department a raise",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a statement to increase the salary of every employee in department_id 2 by 10%.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "UPDATE employees\nSET salary = salary * 1.10\nWHERE department_id = 2;"
+    },
+    "explanation": "`UPDATE ... SET column = expression WHERE condition` modifies only rows matching the WHERE clause; omitting the WHERE clause here would give every employee in the table a raise, not just department 2.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 17
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-018",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "DELETE",
+    "title": "Remove employees with no department",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a statement to delete all employees where `department_id` is NULL.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "DELETE FROM employees WHERE department_id IS NULL;"
+    },
+    "explanation": "Like other NULL checks, `WHERE department_id IS NULL` is required \u2014 `= NULL` would match nothing because NULL is never equal to anything, including itself.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 18
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-019",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "ORDER BY multiple columns",
+    "title": "Sort by department then salary",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query listing all employees sorted first by `department_id` ascending, then by `salary` descending within each department.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name, department_id, salary\nFROM employees\nORDER BY department_id ASC, salary DESC;"
+    },
+    "explanation": "Listing multiple columns in `ORDER BY` sorts primarily by the first column, using the second only to break ties within groups that share the same first-column value.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 19
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-020",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "BETWEEN",
+    "title": "Employees in a salary range",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query to find employees with a salary between 40000 and 60000 inclusive.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name, salary FROM employees WHERE salary BETWEEN 40000 AND 60000;"
+    },
+    "explanation": "`BETWEEN a AND b` is inclusive of both endpoints and is shorthand for `salary >= 40000 AND salary <= 60000`.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 20
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-EASY-021",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "COUNT with condition",
+    "title": "Count employees in a specific department",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query to count how many employees are in department_id 5.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT COUNT(*) FROM employees WHERE department_id = 5;"
+    },
+    "explanation": "`COUNT(*)` counts all rows matching the WHERE filter, regardless of NULLs in any particular column \u2014 different from `COUNT(column)`, which only counts rows where that specific column is non-NULL.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 21
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-022",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "UNION",
+    "title": "Combine two employee lists",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query that returns a single list of names for employees earning over 100000 OR employees hired before 2020, with no duplicate names.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name FROM employees WHERE salary > 100000\nUNION\nSELECT name FROM employees WHERE hire_date < '2020-01-01';"
+    },
+    "explanation": "`UNION` combines two result sets and automatically removes duplicate rows (use `UNION ALL` instead if you want to keep duplicates, which is also faster since it skips the dedup step).",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 22
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-023",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "EXISTS",
+    "title": "Departments that have at least one employee",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query using EXISTS to list department names that have at least one employee.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT d.name\nFROM departments d\nWHERE EXISTS (\n  SELECT 1 FROM employees e WHERE e.department_id = d.id\n);"
+    },
+    "explanation": "`EXISTS` stops as soon as it finds one matching row in the subquery, making it typically faster than an equivalent `IN` subquery for large tables, since it doesn't need to materialize the full list of matches \u2014 just confirm at least one exists.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 23
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-024",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "COALESCE",
+    "title": "Provide a default for missing managers",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query that shows each employee's name and their manager's employee id, displaying 0 instead of NULL when there is no manager.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name, COALESCE(manager_id, 0) AS manager_id\nFROM employees;"
+    },
+    "explanation": "`COALESCE(a, b)` returns the first non-NULL argument \u2014 here, `manager_id` if it's set, otherwise the fallback `0` \u2014 a cleaner alternative to a CASE expression for simple NULL substitution.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 24
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-025",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "GROUP BY multiple columns",
+    "title": "Average salary by department and hire year",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query showing the average salary grouped by `department_id` and the year an employee was hired.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT department_id, EXTRACT(YEAR FROM hire_date) AS hire_year, AVG(salary) AS avg_salary\nFROM employees\nGROUP BY department_id, EXTRACT(YEAR FROM hire_date);"
+    },
+    "explanation": "`GROUP BY` can group by more than one expression at once, creating one row per unique combination \u2014 here, one row per (department, hire year) pair. `EXTRACT(YEAR FROM ...)` pulls the year component out of a date value.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 25
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-026",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Indexes",
+    "title": "Add an index to speed up a common filter",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). A dashboard frequently runs `SELECT * FROM employees WHERE department_id = ? AND salary > ?`. Write the index you would create to speed this up.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "CREATE INDEX idx_employees_dept_salary ON employees (department_id, salary);"
+    },
+    "explanation": "A composite index on `(department_id, salary)` supports this query efficiently because department_id is the equality filter (leftmost column) and salary is the range filter \u2014 matching column order to how the query actually filters is what makes a composite index useful rather than just adding two separate single-column indexes.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 26
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-MEDIUM-027",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Transactions",
+    "title": "Wrap two related updates in a transaction",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write the SQL to move an employee (id=10) from department 1 to department 2, and log the change into an `audit_log` table, ensuring both happen or neither does.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "BEGIN;\nUPDATE employees SET department_id = 2 WHERE id = 10;\nINSERT INTO audit_log (employee_id, change) VALUES (10, 'Moved to dept 2');\nCOMMIT;"
+    },
+    "explanation": "`BEGIN` starts an explicit transaction; both statements are staged but not visible to other connections until `COMMIT`. If anything fails partway through, a `ROLLBACK` (implicit on connection error in many drivers, or explicit) undoes both changes together, keeping the employee record and audit trail consistent.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 27
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-HARD-028",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Window functions - running total",
+    "title": "Running total of salaries by hire order",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query showing each employee's name, hire_date, and a running total of salary ordered by hire date.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT name, hire_date, salary,\n  SUM(salary) OVER (ORDER BY hire_date) AS running_total\nFROM employees;"
+    },
+    "explanation": "A window function's `OVER (ORDER BY hire_date)` without a `PARTITION BY` computes the sum across all rows up to and including the current row in hire-date order, giving a running/cumulative total without collapsing the individual rows the way `GROUP BY` would.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 28
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-HARD-029",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Pivoting with CASE",
+    "title": "Pivot department headcount into columns",
+    "prompt": "Schema: employees(id, name, department_id, salary, hire_date, manager_id), departments(id, name). Write a query that produces one row with columns `dept_1_count`, `dept_2_count`, `dept_3_count` showing headcount for department_ids 1, 2, and 3 respectively.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT\n  SUM(CASE WHEN department_id = 1 THEN 1 ELSE 0 END) AS dept_1_count,\n  SUM(CASE WHEN department_id = 2 THEN 1 ELSE 0 END) AS dept_2_count,\n  SUM(CASE WHEN department_id = 3 THEN 1 ELSE 0 END) AS dept_3_count\nFROM employees;"
+    },
+    "explanation": "This is the classic \"manual pivot\" pattern in standard SQL (before dedicated `PIVOT` syntax, which not all databases support): each `CASE` expression converts a row into a 1-or-0 flag for a specific category, and wrapping it in `SUM` turns those flags into per-category counts, all computed in a single pass over the table.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 29
+  },
+  {
+    "subjectSlug": "sql",
+    "subjectName": "SQL",
+    "code": "SQL-COD-HARD-030",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Query plan & locking",
+    "title": "Diagnose a query blocked by a lock",
+    "prompt": "An UPDATE statement is hanging indefinitely. Write the query you'd run (PostgreSQL) to find what other session is holding a lock that's blocking it.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "SELECT blocked_locks.pid AS blocked_pid,\n       blocking_locks.pid AS blocking_pid,\n       blocked_activity.query AS blocked_query,\n       blocking_activity.query AS blocking_query\nFROM pg_catalog.pg_locks blocked_locks\nJOIN pg_catalog.pg_stat_activity blocked_activity ON blocked_activity.pid = blocked_locks.pid\nJOIN pg_catalog.pg_locks blocking_locks\n  ON blocking_locks.locktype = blocked_locks.locktype\n  AND blocking_locks.database IS NOT DISTINCT FROM blocked_locks.database\n  AND blocking_locks.relation IS NOT DISTINCT FROM blocked_locks.relation\n  AND blocking_locks.pid != blocked_locks.pid\nJOIN pg_catalog.pg_stat_activity blocking_activity ON blocking_activity.pid = blocking_locks.pid\nWHERE NOT blocked_locks.granted;"
+    },
+    "explanation": "PostgreSQL's `pg_locks` and `pg_stat_activity` system views can be joined to identify exactly which session (`blocking_pid`) is holding a lock that's preventing another session (`blocked_pid`) from proceeding \u2014 the standard first step in diagnosing a hung query before deciding whether to `pg_terminate_backend()` the blocking session.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 30
+  }
+]

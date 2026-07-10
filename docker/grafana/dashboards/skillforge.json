@@ -1,0 +1,37 @@
+{
+  "title": "SkillForge Backend",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Backend health",
+      "targets": [{ "expr": "up{job=\"skillforge-backend\"}" }],
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 }
+    },
+    {
+      "type": "graph",
+      "title": "HTTP request rate (per endpoint)",
+      "targets": [{ "expr": "sum by (uri) (rate(http_server_requests_seconds_count{job=\"skillforge-backend\"}[5m]))" }],
+      "gridPos": { "x": 6, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "type": "graph",
+      "title": "HTTP 5xx error rate",
+      "targets": [{ "expr": "sum(rate(http_server_requests_seconds_count{job=\"skillforge-backend\", status=~\"5..\"}[5m]))" }],
+      "gridPos": { "x": 0, "y": 4, "w": 6, "h": 4 }
+    },
+    {
+      "type": "graph",
+      "title": "JVM heap used",
+      "targets": [{ "expr": "sum(jvm_memory_used_bytes{job=\"skillforge-backend\", area=\"heap\"})" }],
+      "gridPos": { "x": 0, "y": 8, "w": 9, "h": 8 }
+    },
+    {
+      "type": "graph",
+      "title": "HikariCP active connections",
+      "targets": [{ "expr": "hikaricp_connections_active{job=\"skillforge-backend\"}" }],
+      "gridPos": { "x": 9, "y": 8, "w": 9, "h": 8 }
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

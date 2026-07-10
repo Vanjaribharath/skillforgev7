@@ -1,0 +1,602 @@
+[
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-001",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "GlideRecord basics",
+    "title": "Query all open incidents",
+    "prompt": "Write a server-side script (Business Rule / Script Include) snippet that queries all incidents with `state` not equal to \"Closed\" (state value 7) and logs each incident's number.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var gr = new GlideRecord('incident');\ngr.addQuery('state', '!=', 7);\ngr.query();\nwhile (gr.next()) {\n  gs.info(gr.number);\n}"
+    },
+    "explanation": "`GlideRecord` is ServiceNow's core server-side data access API. `addQuery` builds the filter, `.query()` executes it, and `.next()` in a while loop steps through each matching record, mirroring a SQL `WHERE` + row iteration.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 1
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-002",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Field access",
+    "title": "Read and update a field value",
+    "prompt": "Write a script snippet that, given a GlideRecord `current` for an incident, sets its `priority` field to 1 (Critical) and adds a work note \"Escalated automatically\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "current.priority = 1;\ncurrent.work_notes = 'Escalated automatically';\ncurrent.update();"
+    },
+    "explanation": "On a `current` GlideRecord (available in Business Rules), fields are accessed as JavaScript-style properties. `.update()` persists the changes back to the database; forgetting it is one of the most common ServiceNow scripting mistakes.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 2
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-003",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Business Rules",
+    "title": "Auto-populate a field before insert",
+    "prompt": "Write a \"before insert\" Business Rule script that sets the `assignment_group` to the value \"Service Desk\" if it is currently empty.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "(function executeRule(current, previous) {\n  if (current.assignment_group.nil()) {\n    current.assignment_group = 'Service Desk';\n  }\n})(current, previous);"
+    },
+    "explanation": "`.nil()` is the correct way to check for an empty/unset GlideRecord field (safer than `== ''` for reference fields). Because this runs \"before insert\", the change is applied to the same database write instead of triggering a second update.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 3
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-004",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Client Scripts",
+    "title": "Show a field only when a condition is met",
+    "prompt": "Write an onChange Client Script snippet that shows the `justification` field only when `priority` is changed to 1 (Critical).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "function onChange(control, oldValue, newValue, isLoading) {\n  if (isLoading) return;\n  g_form.setVisible('justification', newValue == '1');\n}"
+    },
+    "explanation": "`isLoading` guards against the script firing during initial form load, which is a standard defensive check in every onChange script. `g_form.setVisible()` toggles field visibility on the client side based on the new field value.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 4
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-005",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "GlideDateTime",
+    "title": "Compute days since creation",
+    "prompt": "Write a script snippet that calculates how many days have passed since an incident's `sys_created_on` date.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var gdt = new GlideDateTime(current.sys_created_on);\nvar now = new GlideDateTime();\nvar daysOpen = gs.dateDiff(gdt.getDisplayValue(), now.getDisplayValue(), true) / 86400;"
+    },
+    "explanation": "`GlideDateTime` wraps ServiceNow date/time values for safe arithmetic across time zones. `gs.dateDiff(..., true)` returns the difference in seconds, which is divided by 86400 (seconds per day) to get whole days.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 5
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-006",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "ACL basics",
+    "title": "Restrict a field to admins only",
+    "prompt": "Describe (in words, no script needed) how you would restrict write access to the `impact` field on the incident table so only members of the `admin` role can edit it.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Create a field-level Access Control (ACL) on incident.impact for the 'write' operation, and set the 'Requires role' list to 'admin'."
+    },
+    "explanation": "ServiceNow enforces field-level security through ACL records scoped to a table.field pair and an operation (read/write/create/delete); adding a required role means only users holding that role pass the check, and everyone else is denied at the platform layer regardless of UI.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 6
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-007",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "GlideAggregate",
+    "title": "Count incidents grouped by priority",
+    "prompt": "Write a script that counts open incidents grouped by `priority` and logs each priority with its count.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var ga = new GlideAggregate('incident');\nga.addQuery('active', true);\nga.addAggregate('COUNT');\nga.groupBy('priority');\nga.query();\nwhile (ga.next()) {\n  gs.info('Priority ' + ga.priority + ': ' + ga.getAggregate('COUNT'));\n}"
+    },
+    "explanation": "`GlideAggregate` is the efficient way to do SQL-style `GROUP BY` + `COUNT`/`SUM`/`AVG` in ServiceNow without pulling every record into memory \u2014 the database does the aggregation, and `getAggregate()` retrieves the computed value per group.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 7
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-008",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Script Includes",
+    "title": "Reusable server-side utility",
+    "prompt": "Write a Script Include class `IncidentUtils` with a method `isOverSLA(incidentSysId)` that returns true if the incident's SLA has breached.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var IncidentUtils = Class.create();\nIncidentUtils.prototype = {\n  initialize: function() {},\n\n  isOverSLA: function(incidentSysId) {\n    var gr = new GlideRecord('incident');\n    if (gr.get(incidentSysId)) {\n      return gr.made_sla == false;\n    }\n    return false;\n  },\n\n  type: 'IncidentUtils'\n};"
+    },
+    "explanation": "Script Includes are ServiceNow's reusable server-side classes, following the `Class.create()` prototype pattern with a required `type` property matching the class name. `gr.get(sysId)` loads a single record by its unique sys_id, and `made_sla` is the platform's built-in SLA-breach flag.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 8
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-009",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Scripted REST API",
+    "title": "Return incident data via a Scripted REST resource",
+    "prompt": "Write a Scripted REST API resource script that returns the `number` and `short_description` of an incident given its sys_id from the URL, as JSON.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "(function process(request, response) {\n  var sysId = request.pathParams.sys_id;\n  var gr = new GlideRecord('incident');\n  if (gr.get(sysId)) {\n    return {\n      number: gr.getValue('number'),\n      short_description: gr.getValue('short_description')\n    };\n  }\n  response.setStatus(404);\n  return { error: 'Incident not found' };\n})(request, response);"
+    },
+    "explanation": "Scripted REST APIs receive `request`/`response` objects; `request.pathParams` reads variables from the URL path (e.g. `/incident/{sys_id}`), and returning a plain object auto-serializes to JSON. Setting `response.setStatus(404)` correctly signals \"not found\" to API consumers.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 9
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-010",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "GlideRecord updateMultiple",
+    "title": "Bulk-close resolved incidents",
+    "prompt": "Write a script that finds all incidents with `state` = Resolved and `resolved_at` more than 30 days ago, and moves them to Closed.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var gr = new GlideRecord('incident');\ngr.addQuery('state', 6); // Resolved\ngr.addQuery('resolved_at', '<', gs.daysAgoStart(30));\ngr.query();\nwhile (gr.next()) {\n  gr.state = 7; // Closed\n  gr.update();\n}"
+    },
+    "explanation": "`gs.daysAgoStart(30)` returns a GlideDateTime for the start of the day 30 days ago, giving a clean cutoff for the query. Updating each record individually inside the loop (rather than `updateMultiple()`) ensures Business Rules on the state transition still fire correctly.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 10
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-011",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "UI Policy vs Client Script",
+    "title": "Enforce mandatory field conditionally",
+    "prompt": "Explain how you would make the `close_notes` field mandatory only when `state` is being set to Closed (7), preferring a no-code solution over a Client Script.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Create a UI Policy on the incident form with condition 'State is Closed', and in the UI Policy Action for close_notes, set Mandatory = true."
+    },
+    "explanation": "UI Policies are the declarative, no-code way to handle conditional field behavior (mandatory/visible/read-only) in ServiceNow, and are preferred over Client Scripts for simple conditional logic because they're easier to maintain and don't require JavaScript.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 11
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-012",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Flow Designer / Scheduled Jobs",
+    "title": "Scheduled job to send SLA breach reminders",
+    "prompt": "Write a Scheduled Script Execution that runs daily and emails the assignment group's manager for every incident whose SLA is about to breach within 2 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var gr = new GlideRecord('incident');\ngr.addActiveQuery();\ngr.addQuery('sla_due', '<=', gs.hoursAgoStart(-2));\ngr.query();\nwhile (gr.next()) {\n  gs.eventQueue('incident.sla.warning', gr, gr.assignment_group.manager.email, '');\n}"
+    },
+    "explanation": "`gs.hoursAgoStart(-2)` computes a timestamp 2 hours in the future (negative \"ago\" = ahead), giving the breach-warning cutoff. Rather than sending email directly, the script queues an event with `gs.eventQueue()` \u2014 the standard ServiceNow pattern that decouples business logic from notification delivery, which is configured separately.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 12
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-HARD-013",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Async Business Rules & performance",
+    "title": "Fix a slow synchronous Business Rule",
+    "prompt": "A synchronous \"after update\" Business Rule on incident recalculates statistics across thousands of related records on every save, slowing down every incident update. Describe the fix and write the corrected script header.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "(function executeRule(current, previous) {\n  // Move heavy logic here, but change the Business Rule's\n  // 'When' setting from 'after' to 'async' in the Business Rule form\n  // so it runs on a background scheduled worker instead of blocking the save.\n})(current, previous);"
+    },
+    "explanation": "Synchronous \"after\" Business Rules block the user's save transaction until they finish. Converting the rule to \"async\" queues the same logic to run on a background worker (via the `sysevent_queue`), so the user's save completes instantly while the heavy recalculation happens separately \u2014 the standard fix for this exact performance complaint.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 13
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-HARD-014",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "GlideRecord query safety",
+    "title": "Fix a script injection risk in a query",
+    "prompt": "A script builds a query using `gr.addQuery('short_description', 'CONTAINS', userInput)` where `userInput` comes directly from a URL parameter. Identify the risk and write a safer version.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var userInput = request.queryParams.q + '';  // coerce to string, never eval\nvar gr = new GlideRecord('incident');\ngr.addEncodedQuery('short_descriptionLIKE' + GlideStringUtil.escapeQuotes(userInput));\ngr.query();\n\n// Preferred safer alternative: keep addQuery(), it already parameterizes correctly\nvar gr2 = new GlideRecord('incident');\ngr2.addQuery('short_description', 'CONTAINS', userInput);\ngr2.query();"
+    },
+    "explanation": "`addQuery()` with separate field/operator/value arguments is already safe from injection because GlideRecord parameterizes the value internally \u2014 the real risk appears when developers instead build a raw encoded query string via string concatenation (`addEncodedQuery`), which can let a malicious `userInput` inject extra query terms; the fix is to avoid string-built encoded queries with untrusted input and stick to the parameterized `addQuery()` form.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 14
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-HARD-015",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Batch processing at scale",
+    "title": "Process 500,000 records without timing out",
+    "prompt": "Write a scheduled script pattern to safely process 500,000 incident records for a data cleanup, avoiding the platform's execution time limit.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var BATCH_SIZE = 1000;\nvar gr = new GlideRecord('incident');\ngr.addQuery('u_needs_cleanup', true);\ngr.orderBy('sys_id');\ngr.setLimit(BATCH_SIZE);\ngr.query();\nvar processed = 0;\nwhile (gr.next()) {\n  // ... cleanup logic per record ...\n  processed++;\n}\ngs.info('Processed batch of ' + processed + ' records');\n// Re-trigger this script via a Scheduled Job configured to repeat\n// until a control record/flag confirms u_needs_cleanup count reaches 0."
+    },
+    "explanation": "Instead of one massive query that risks hitting the scripted execution timeout, the job processes a bounded `setLimit(BATCH_SIZE)` chunk per run and relies on a repeating Scheduled Job (or Flow Designer subflow with a loop) to invoke it again until the remaining record count is zero \u2014 the standard large-batch pattern in ServiceNow.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 15
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-016",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "GlideRecord insert",
+    "title": "Create a new incident from script",
+    "prompt": "Write a script that creates a new incident with short_description \"Disk space low on web-03\" and priority 2.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var gr = new GlideRecord('incident');\ngr.initialize();\ngr.short_description = 'Disk space low on web-03';\ngr.priority = 2;\nvar sysId = gr.insert();"
+    },
+    "explanation": "`initialize()` sets up a new, empty in-memory record (as opposed to `.get()`/`.query()`, which load an existing one). `.insert()` writes it to the database and returns the new record's sys_id.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 16
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-017",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Field types - reference",
+    "title": "Set a reference field by sys_id",
+    "prompt": "Write a script snippet that assigns an incident's `assignment_group` to a specific group given its sys_id stored in `groupSysId`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "current.assignment_group = groupSysId;\ncurrent.update();"
+    },
+    "explanation": "Reference fields (like `assignment_group`, which points to a `sys_user_group` record) are set by assigning the target record's sys_id directly to the field \u2014 ServiceNow resolves the display value automatically.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 17
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-018",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "gs.info logging",
+    "title": "Log a diagnostic message",
+    "prompt": "Write a line of script that logs \"Cleanup job started\" to the system log.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "gs.info('Cleanup job started');"
+    },
+    "explanation": "`gs.info()` (along with `gs.warn()` and `gs.error()`) writes to the ServiceNow system log at the corresponding severity level, visible in System Logs > System Log > All, which is the primary debugging tool for server-side scripts.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 18
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-019",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Choice fields",
+    "title": "Query records by a choice field's underlying value",
+    "prompt": "Write a query that finds all incidents where the `impact` choice field is set to \"High\" (value 1).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var gr = new GlideRecord('incident');\ngr.addQuery('impact', 1);\ngr.query();"
+    },
+    "explanation": "Choice fields store an underlying value (often numeric, like `1` for High) separate from their display label (\"High\"); scripts should filter on the stored value, not the label text, since the label can be relabeled per-language without changing the stored value.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 19
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-020",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Client Script - field change",
+    "title": "Auto-populate a field on selection",
+    "prompt": "Write an onChange Client Script that, when `category` is set to \"Hardware\", automatically sets `subcategory` to \"Desktop\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "function onChange(control, oldValue, newValue, isLoading) {\n  if (isLoading) return;\n  if (newValue == 'hardware') {\n    g_form.setValue('subcategory', 'desktop');\n  }\n}"
+    },
+    "explanation": "`g_form.setValue()` updates another field on the form from client-side script in response to the watched field's change, giving immediate feedback without a full form reload.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 20
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-EASY-021",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "UI Actions",
+    "title": "Add a custom button to a form",
+    "prompt": "Describe how you'd add a UI Action button labeled \"Escalate\" that appears only on the incident form, and briefly what script field it uses.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Create a UI Action record with Table=incident, Form button=true, Name/Action name='Escalate', and put the escalation logic (e.g. setting priority and calling current.update()) in the Script field, which runs when the button is clicked."
+    },
+    "explanation": "UI Actions are the standard mechanism for custom form/list buttons in ServiceNow; scoping the Table field to `incident` ensures the button only renders on that form, and the Script field contains the server-side (or client-side, if 'Client' is checked) logic executed on click.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 21
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-022",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Business Rule order of operations",
+    "title": "Order-sensitive before-update logic",
+    "prompt": "Write a \"before update\" Business Rule that prevents an incident from being closed if `close_notes` is empty, aborting the save with an error message.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "(function executeRule(current, previous) {\n  if (current.state == 7 && current.close_notes.nil()) {\n    gs.addErrorMessage('Close notes are required before closing an incident.');\n    current.setAbortAction(true);\n  }\n})(current, previous);"
+    },
+    "explanation": "`current.setAbortAction(true)` inside a \"before\" Business Rule cancels the database operation entirely, and `gs.addErrorMessage()` surfaces a message to the user explaining why \u2014 the correct combination for server-side validation that must not be bypassable by disabling client-side script.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 22
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-023",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "GlideRecord vs GlideRecordSecure",
+    "title": "Explain when to bypass ACLs intentionally",
+    "prompt": "A scheduled script needs to update incidents regardless of the running user's field-level ACL restrictions. Which GlideRecord variant achieves this, and what's the tradeoff?",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Standard `GlideRecord` (not `GlideRecordSecure`) bypasses ACL enforcement by default in scoped/global server scripts run as system context, e.g. Scheduled Jobs \u2014 but this means it will NOT enforce any ACL restrictions, so it must only be used in trusted background logic, never to serve data back to an end user's request."
+    },
+    "explanation": "`GlideRecord` operations run in system context (like Scheduled Jobs, Business Rules, Script Includes) don't enforce ACLs by default, which is necessary for legitimate background automation but also why exposing raw `GlideRecord` results through something like a Scripted REST API to end users is a common security mistake \u2014 `GlideRecordSecure` exists specifically to opt into ACL enforcement in those user-facing contexts.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 23
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-024",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Scheduled Jobs",
+    "title": "Write a nightly cleanup scheduled job",
+    "prompt": "Write a Scheduled Script Execution that runs nightly and deletes incidents in state \"Closed\" that were closed more than 2 years ago.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var gr = new GlideRecord('incident');\ngr.addQuery('state', 7);\ngr.addQuery('closed_at', '<', gs.yearsAgo(2));\ngr.query();\nwhile (gr.next()) {\n  gr.deleteRecord();\n}"
+    },
+    "explanation": "`gs.yearsAgo(2)` returns a GlideDateTime 2 years before now, giving a clean cutoff. `deleteRecord()` on each matched GlideRecord performs the actual deletion \u2014 this pattern (query, loop, mutate) is the same one used for bulk updates, just calling `deleteRecord()` instead of `update()`.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 24
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-025",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Inbound Email Actions",
+    "title": "Create an incident from an inbound email",
+    "prompt": "Describe how an Inbound Email Action would parse an incoming support email and create an incident, referencing the relevant script variable that holds the parsed email.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Create an Inbound Email Action on table='incident', condition set to match on subject/recipient, with script:\ncurrent.short_description = email.subject;\ncurrent.description = email.body_text;\ncurrent.caller_id = gs.getUserID();\ncurrent.insert();"
+    },
+    "explanation": "Inbound Email Actions expose the parsed message through the `email` script object (e.g. `email.subject`, `email.body_text`, `email.from`), letting the action map email content directly onto a new or existing record's fields \u2014 the mechanism behind \"email this address to open a ticket\" support desks.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 25
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-026",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Flow Designer basics",
+    "title": "Describe a simple approval flow",
+    "prompt": "Describe (in words) the shape of a Flow Designer flow that, when a Catalog Item request is submitted, asks the requester's manager for approval, and only then creates a task.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Trigger: Record Created on sc_request.\nStep 1: Ask for Approval (approver = requester's manager, via a Lookup Record or reference field on the requester's user record).\nStep 2 (conditional, only if approved): Create Record action to generate the fulfillment task.\nStep 3 (if rejected): Update the request state to 'Rejected' and notify the requester."
+    },
+    "explanation": "Flow Designer models automation as a trigger plus a sequence of actions with branching logic, replacing what used to require multiple Workflow (legacy) activities or custom script \u2014 the built-in \"Ask for Approval\" action specifically pauses the flow until the designated approver responds, then branches based on their decision.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 26
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-MEDIUM-027",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Data cleanup with GlideAggregate",
+    "title": "Find duplicate records by a field",
+    "prompt": "Write a script using GlideAggregate that finds `email` values in the `sys_user` table that appear more than once (potential duplicate accounts).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "var ga = new GlideAggregate('sys_user');\nga.addAggregate('COUNT');\nga.groupBy('email');\nga.addHaving('COUNT', '>', 1);\nga.query();\nwhile (ga.next()) {\n  gs.info('Duplicate email: ' + ga.email + ' (' + ga.getAggregate('COUNT') + ' accounts)');\n}"
+    },
+    "explanation": "`addHaving()` filters on the aggregate result itself (count > 1), the GlideAggregate equivalent of SQL's `HAVING` clause \u2014 necessary because a plain `addQuery` can only filter individual rows before aggregation, not the aggregated count.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 27
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-HARD-028",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "ACL scripting",
+    "title": "Write a scripted ACL condition",
+    "prompt": "Write the script portion of an ACL that only allows a user to read an incident if they are either the assigned agent, the caller, or a member of the assignment group.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "answer = (current.assigned_to == gs.getUserID())\n  || (current.caller_id == gs.getUserID())\n  || (new GlideRecord('sys_user_grmember').addQuery('group', current.assignment_group)\n      .addQuery('user', gs.getUserID()).query() && false)\n  || gs.getUser().isMemberOf(current.assignment_group);"
+    },
+    "explanation": "Scripted ACLs must set a boolean `answer` variable that ServiceNow reads to grant or deny access. `gs.getUser().isMemberOf(groupSysId)` is the correct, efficient way to check group membership (rather than manually querying `sys_user_grmember`, which is left in the example only to illustrate the underlying table an ACL like this ultimately relies on).",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 28
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-HARD-029",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "REST integration error handling",
+    "title": "Call an external REST API with retry and error handling",
+    "prompt": "Write a Script Include method that calls an external REST endpoint via RESTMessageV2, retries once on a 5xx response, and throws a clear error on final failure.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "callExternalApi: function(payload) {\n  var attempt = 0;\n  var response;\n  while (attempt < 2) {\n    var request = new sn_ws.RESTMessageV2('External Payment API', 'POST');\n    request.setRequestBody(JSON.stringify(payload));\n    response = request.execute();\n    var status = response.getStatusCode();\n    if (status < 500) break;\n    attempt++;\n  }\n  if (response.getStatusCode() >= 500) {\n    throw new Error('External API failed after retry: HTTP ' + response.getStatusCode());\n  }\n  return JSON.parse(response.getBody());\n}"
+    },
+    "explanation": "`RESTMessageV2` referencing a pre-configured REST Message record (\"External Payment API\") keeps connection details (base URL, auth) out of the script itself. Only retrying on 5xx (server errors), not 4xx (client errors like bad request data), avoids uselessly repeating a call that will fail identically every time due to a request problem rather than a transient server issue.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 29
+  },
+  {
+    "subjectSlug": "servicenow",
+    "subjectName": "ServiceNow",
+    "code": "SERVICENOW-COD-HARD-030",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Performance - avoid script includes in loops",
+    "title": "Fix a Business Rule causing database timeouts at scale",
+    "prompt": "A Business Rule on incident update calls a Script Include that itself runs a GlideRecord query against a 2-million-row table on every single incident save, causing timeouts during bulk imports. Describe the fix.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Cache the Script Include's lookup result (e.g. in a scoped application property, a small reference table with its own index, or a GlideCacheable-backed in-memory cache keyed by the lookup input) instead of re-querying the 2-million-row table on every save; alternatively, move the expensive check out of the synchronous Business Rule entirely and into an async Business Rule or a nightly Scheduled Job that pre-computes and stores the result."
+    },
+    "explanation": "Running an expensive query inside a synchronous Business Rule multiplies its cost by every record touched during a bulk import, which is exactly the kind of N+1-at-platform-scale problem that turns a fast individual save into a timeout during a data load \u2014 the fix is either to cache/precompute the expensive part, or move it off the synchronous save path (async Business Rule / Scheduled Job) so bulk operations aren't penalized by per-record lookups they don't actually need.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 30
+  }
+]

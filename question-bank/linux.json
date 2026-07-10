@@ -1,0 +1,602 @@
+[
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-001",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "File Listing & Sorting",
+    "title": "List files by size",
+    "prompt": "Write a single Linux command to list all files in the current directory sorted by size, largest first, in long-listing format.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "ls -lS"
+    },
+    "explanation": "`ls -l` gives long format (permissions, owner, size, date); `-S` sorts by file size descending. This is the fastest built-in way to spot large files without piping to `sort`.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 1
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-002",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "find command",
+    "title": "Find recently modified log files",
+    "prompt": "Write a command to find all `.log` files under `/var/log` that were modified in the last 24 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "find /var/log -name '*.log' -mtime -1"
+    },
+    "explanation": "`-mtime -1` matches files modified less than 1 day ago (the `-` means \"less than\"). `-name '*.log'` restricts the search to log files by extension.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 2
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-003",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Text Processing",
+    "title": "Count lines in a file",
+    "prompt": "Given a file `access.log`, write a command to print the number of lines it contains.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "wc -l access.log"
+    },
+    "explanation": "`wc` (word count) with `-l` counts newline characters, which for a normal text file equals the number of lines.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 3
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-004",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Permissions",
+    "title": "Make a script executable",
+    "prompt": "You have a file `deploy.sh` that only the owner should be able to execute (in addition to existing read/write). Write the command to add that permission without changing group/other permissions.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "chmod u+x deploy.sh"
+    },
+    "explanation": "`u+x` adds the execute bit only for the file's owner (`u`), leaving group (`g`) and other (`o`) permissions untouched \u2014 safer than `chmod 755` if you don't know the existing bits.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 4
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-005",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "grep",
+    "title": "Case-insensitive error search",
+    "prompt": "Write a command to search `app.log` for the word \"error\" regardless of case (matches ERROR, Error, error, etc.) and print matching lines with their line numbers.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "grep -in 'error' app.log"
+    },
+    "explanation": "`-i` makes the match case-insensitive, `-n` prefixes each match with its line number, which is essential when you need to jump straight to the line in an editor.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 5
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-006",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Process Management",
+    "title": "Top memory-consuming processes",
+    "prompt": "Write a command that lists the top 5 processes by memory usage (RSS), most memory-hungry first.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "ps aux --sort=-%mem | head -6"
+    },
+    "explanation": "`ps aux` lists all processes with resource columns; `--sort=-%mem` sorts descending by percent-memory column. `head -6` keeps the header row plus the top 5 processes.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 6
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-007",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "find + cleanup",
+    "title": "Delete stale temp files safely",
+    "prompt": "Write a single command that finds all regular files under `/tmp` older than 7 days and deletes them, without deleting directories.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "find /tmp -type f -mtime +7 -delete"
+    },
+    "explanation": "`-type f` restricts to regular files so directories are untouched. `-mtime +7` means \"more than 7 days old\". `-delete` is safer and faster than piping to `xargs rm` because `find` handles the removal internally without spawning a shell per file.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 7
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-008",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "awk / sort / uniq",
+    "title": "Top IP addresses from an access log",
+    "prompt": "Given `access.log` where the first whitespace-separated field is the client IP, write a pipeline that prints each unique IP with its hit count, sorted from most to least frequent.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "awk '{print $1}' access.log | sort | uniq -c | sort -rn"
+    },
+    "explanation": "`awk '{print $1}'` extracts the IP column. `sort` groups identical IPs together so `uniq -c` can count consecutive duplicates. The final `sort -rn` orders the counts numerically, descending.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 8
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-009",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "cron",
+    "title": "Schedule a nightly backup",
+    "prompt": "Write the crontab line to run `/home/ops/backup.sh` every day at 2:30 AM.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "30 2 * * * /home/ops/backup.sh"
+    },
+    "explanation": "Crontab fields are `minute hour day-of-month month day-of-week`. `30 2 * * *` fires at minute 30 of hour 2 (2:30 AM), every day of every month, every day of the week.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 9
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-010",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "sed",
+    "title": "In-place find and replace",
+    "prompt": "Write a command to replace every occurrence of `foo` with `bar` in `config.txt`, editing the file in place and keeping a `.bak` backup of the original.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sed -i.bak 's/foo/bar/g' config.txt"
+    },
+    "explanation": "`-i.bak` edits the file in place while saving the pre-edit version as `config.txt.bak`. The `s/foo/bar/g` substitution command replaces every match on every line (`g` = global, not just the first per line).",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 10
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-011",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Networking & Process Management",
+    "title": "Free up a port held by a stuck process",
+    "prompt": "Write commands to find which process is listening on TCP port 8080 and terminate it gracefully.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "lsof -i :8080\nkill -15 <PID_from_output>"
+    },
+    "explanation": "`lsof -i :8080` lists the process bound to that port along with its PID. `kill -15` sends SIGTERM, requesting a clean shutdown, which should always be tried before the forceful `kill -9`.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 11
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-012",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Archiving",
+    "title": "Compress a directory excluding one folder",
+    "prompt": "Write a command to create `www.tar.gz` from the `/var/www` directory while excluding the `node_modules` folder anywhere inside it.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "tar --exclude='node_modules' -czf www.tar.gz -C /var/www ."
+    },
+    "explanation": "`--exclude` skips any path matching the pattern during archiving. `-c` creates, `-z` gzips, `-f` names the output file. `-C /var/www .` archives the directory's contents without embedding the full absolute path in the tarball.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 12
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-HARD-013",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "awk aggregation",
+    "title": "Sum a column grouped by category",
+    "prompt": "Given a comma-separated file `sales.csv` with columns `region,amount`, write an awk one-liner that prints each region with the sum of its amounts.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "awk -F, '{sum[$1]+=$2} END {for (r in sum) print r, sum[r]}' sales.csv"
+    },
+    "explanation": "`-F,` sets the field separator to a comma. `sum[$1]+=$2` accumulates the amount into an associative array keyed by region as each line is read. The `END` block runs once after all lines are processed, iterating the array to print totals.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 13
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-HARD-014",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Bash Scripting",
+    "title": "Disk usage alert script",
+    "prompt": "Write a bash script that checks root filesystem usage and prints \"ALERT: disk usage above 90%\" (and exits with status 1) if usage exceeds 90%, otherwise prints \"OK\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "#!/bin/bash\nUSAGE=$(df / | tail -1 | awk '{print $5}' | tr -d '%')\nif [ \"$USAGE\" -gt 90 ]; then\n  echo \"ALERT: disk usage above 90%\"\n  exit 1\nelse\n  echo \"OK\"\nfi"
+    },
+    "explanation": "`df /` reports root filesystem stats; `tail -1` drops the header, `awk '{print $5}'` grabs the use-percentage column, and `tr -d '%'` strips the `%` so it can be compared numerically with `-gt` in the `if` test.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 14
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-HARD-015",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "find + xargs, safe filenames",
+    "title": "Recursively chown files safely with spaces in names",
+    "prompt": "Write a command to recursively change ownership of all `.conf` files under `/etc/app` to `appuser:appgroup`, safely handling filenames that contain spaces.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "find /etc/app -name '*.conf' -print0 | xargs -0 chown appuser:appgroup"
+    },
+    "explanation": "`-print0` separates found paths with a null byte instead of whitespace/newlines, and `xargs -0` reads that same null-delimited stream \u2014 the only combination that is fully safe for filenames containing spaces, tabs, or newlines.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 15
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-016",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Symbolic Links",
+    "title": "Create a symbolic link",
+    "prompt": "Write a command to create a symbolic link named `current` pointing to `/opt/releases/v2.3`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "ln -s /opt/releases/v2.3 current"
+    },
+    "explanation": "`ln -s target link_name` creates a symlink. The target is the real path being pointed to; the second argument is the new link's name \u2014 commonly used for zero-downtime \"current release\" pointers in deployments.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 16
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-017",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Disk Usage",
+    "title": "Directory size summary",
+    "prompt": "Write a command to show the total disk usage of `/var/log` in human-readable form (not a per-file breakdown).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "du -sh /var/log"
+    },
+    "explanation": "`-s` summarizes into a single total instead of listing every subdirectory, and `-h` formats the size as KB/MB/GB instead of raw byte counts.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 17
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-018",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Service Management",
+    "title": "Check and restart a service",
+    "prompt": "Write commands to check the status of the `nginx` service and restart it.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "systemctl status nginx\nsystemctl restart nginx"
+    },
+    "explanation": "`systemctl` is the standard interface to systemd-managed services on modern Linux; `status` shows whether it's running plus recent log lines, and `restart` stops then starts it in one command.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 18
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-019",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Log Viewing",
+    "title": "Tail live logs",
+    "prompt": "Write a command to continuously follow new lines being appended to `/var/log/app/app.log` in real time.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "tail -f /var/log/app/app.log"
+    },
+    "explanation": "`-f` (follow) keeps `tail` running and prints new lines as they're written, which is the standard way to watch a log during a deployment or while reproducing a bug.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 19
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-020",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Recursive Search",
+    "title": "Recursive grep across a directory",
+    "prompt": "Write a command to search recursively through `/etc/app` for any file containing the string \"DEBUG_MODE\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "grep -r 'DEBUG_MODE' /etc/app"
+    },
+    "explanation": "`-r` makes grep descend into subdirectories automatically instead of only checking files in the top-level path given.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 20
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-EASY-021",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "File Comparison",
+    "title": "Diff two config files",
+    "prompt": "Write a command to show the differences between `config.old.yml` and `config.new.yml`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "diff config.old.yml config.new.yml"
+    },
+    "explanation": "`diff` compares two files line by line and prints only the lines that differ, prefixed with `<` for the first file and `>` for the second \u2014 the basic building block behind most patch/version-control diffing.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 21
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-022",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Networking",
+    "title": "List processes with open network connections",
+    "prompt": "Write a command to list all processes with active TCP connections along with the process name and PID.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "ss -tnp"
+    },
+    "explanation": "`ss` is the modern replacement for `netstat`; `-t` filters to TCP, `-n` shows numeric addresses/ports instead of resolving hostnames (much faster), and `-p` shows the owning process name and PID.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 22
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-023",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Text Processing",
+    "title": "Extract a column from /etc/passwd",
+    "prompt": "Write a command that lists just the usernames from `/etc/passwd` (a colon-delimited file where the username is the first field).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "awk -F: '{print $1}' /etc/passwd"
+    },
+    "explanation": "`-F:` sets the field separator to a colon to match `/etc/passwd`'s format, and `{print $1}` prints only the first field of each line.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 23
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-024",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Log Duplication",
+    "title": "Tee output to a file and the screen",
+    "prompt": "Write a command that runs `./deploy.sh`, showing its output on screen while also saving it to `deploy.log`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "./deploy.sh 2>&1 | tee deploy.log"
+    },
+    "explanation": "`tee` reads from stdin and writes to both stdout and the named file simultaneously. `2>&1` redirects stderr into stdout first, so both error and normal output get captured in the log, not just stdout.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 24
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-025",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "File Sync",
+    "title": "Sync a directory to a remote server",
+    "prompt": "Write a command to sync the local `/var/www/site/` directory to `user@server:/var/www/site/`, only transferring changed files and deleting remote files no longer present locally.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "rsync -avz --delete /var/www/site/ user@server:/var/www/site/"
+    },
+    "explanation": "`-a` (archive) preserves permissions/timestamps/symlinks, `-v` is verbose, `-z` compresses data in transit, and `--delete` removes files on the destination that no longer exist on the source \u2014 without it, stale files would accumulate remotely.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 25
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-026",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Permissions (octal)",
+    "title": "Set exact permissions with octal notation",
+    "prompt": "Write a command to set `deploy_key.pem` so only the owner can read or write it (no execute, no access for group/other).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "chmod 600 deploy_key.pem"
+    },
+    "explanation": "Octal 600 breaks down as owner=rw- (6), group=--- (0), other=--- (0). SSH and similar tools will actually refuse to use a private key file if its permissions are looser than this.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 26
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-MEDIUM-027",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Shell Productivity",
+    "title": "Create a persistent alias",
+    "prompt": "Write the line you'd add to `~/.bashrc` to create a permanent alias `ll` for `ls -alF`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "alias ll='ls -alF'"
+    },
+    "explanation": "Adding an `alias` line to `~/.bashrc` makes it available in every new interactive shell session, since that file is sourced automatically on shell startup.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 27
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-HARD-028",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "systemd unit files",
+    "title": "Write a systemd service unit",
+    "prompt": "Write a systemd unit file that runs `/opt/app/start.sh` as user `appuser`, automatically restarts on failure, and starts after the network is up.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "[Unit]\nDescription=My Application\nAfter=network.target\n\n[Service]\nType=simple\nUser=appuser\nExecStart=/opt/app/start.sh\nRestart=on-failure\nRestartSec=5\n\n[WantedBy]=multi-user.target"
+    },
+    "explanation": "`After=network.target` orders startup relative to networking without hard-requiring it succeed first. `Restart=on-failure` plus `RestartSec=5` gives systemd's own crash-recovery instead of relying on an external supervisor, and `Type=simple` tells systemd the ExecStart process itself is the main service process to track.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 28
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-HARD-029",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "journalctl filtering",
+    "title": "Query systemd logs by time range and priority",
+    "prompt": "Write a journalctl command to show only ERROR-level-or-worse logs from the `app.service` unit in the last 2 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "journalctl -u app.service -p err --since \"2 hours ago\""
+    },
+    "explanation": "`-u` filters to a specific systemd unit, `-p err` includes that priority and everything more severe (crit, alert, emerg), and `--since` accepts natural-language relative time expressions.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 29
+  },
+  {
+    "subjectSlug": "linux",
+    "subjectName": "Linux",
+    "code": "LINUX-COD-HARD-030",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "xargs with parallelism",
+    "title": "Parallel-process a list of files",
+    "prompt": "Write a command that resizes every `.png` file under `/data/images` to 800px wide using `convert`, processing up to 4 files at once in parallel.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "find /data/images -name '*.png' -print0 | xargs -0 -P4 -I{} convert {} -resize 800x {}"
+    },
+    "explanation": "`-P4` tells xargs to run up to 4 invocations of the command concurrently instead of one at a time, and `-I{}` lets the found filename be substituted into both the input and output position of the `convert` command \u2014 a common way to parallelize a slow per-file batch job without writing a script.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 30
+  }
+]

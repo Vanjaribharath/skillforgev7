@@ -1,0 +1,602 @@
+[
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-001",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "String Manipulation",
+    "title": "Reverse a string",
+    "prompt": "Write a Java method `reverse(String s)` that returns the input string reversed. Example: `reverse(\"hello\")` returns `\"olleh\"`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static String reverse(String s) {\n    return new StringBuilder(s).reverse().toString();\n}"
+    },
+    "explanation": "`StringBuilder` has a built-in `reverse()` method that reverses its internal character sequence in place, avoiding manual index-swapping loops.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 1
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-002",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Arrays",
+    "title": "Find the maximum in an array",
+    "prompt": "Write a Java method `max(int[] arr)` that returns the largest value in a non-empty integer array.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static int max(int[] arr) {\n    int result = arr[0];\n    for (int n : arr) {\n        if (n > result) result = n;\n    }\n    return result;\n}"
+    },
+    "explanation": "A single linear pass keeping track of the largest value seen so far is O(n) time and O(1) extra space \u2014 the standard approach before reaching for streams or sorting.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 2
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-003",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Collections",
+    "title": "Remove duplicates from a list",
+    "prompt": "Write a Java method `List<Integer> dedupe(List<Integer> nums)` that returns the list with duplicate values removed, preserving first-occurrence order.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static List<Integer> dedupe(List<Integer> nums) {\n    return new ArrayList<>(new LinkedHashSet<>(nums));\n}"
+    },
+    "explanation": "`LinkedHashSet` combines Set semantics (no duplicates) with insertion-order iteration, so wrapping the list in one and back into an ArrayList is the shortest correct way to dedupe while preserving order.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 3
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-004",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Exception Handling",
+    "title": "Safe integer parsing",
+    "prompt": "Write a method `Integer safeParse(String s)` that returns the parsed integer, or `null` if the string is not a valid integer, without letting an exception propagate.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static Integer safeParse(String s) {\n    try {\n        return Integer.parseInt(s);\n    } catch (NumberFormatException e) {\n        return null;\n    }\n}"
+    },
+    "explanation": "`Integer.parseInt` throws `NumberFormatException` on invalid input; wrapping it in a try/catch that returns `null` converts that into a value the caller can check with a simple null test instead of a try/catch of their own.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 4
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-005",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Streams basics",
+    "title": "Sum even numbers with streams",
+    "prompt": "Write a Java method `sumEvens(List<Integer> nums)` using the Stream API that returns the sum of all even numbers in the list.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static int sumEvens(List<Integer> nums) {\n    return nums.stream()\n               .filter(n -> n % 2 == 0)\n               .mapToInt(Integer::intValue)\n               .sum();\n}"
+    },
+    "explanation": "`filter` keeps only elements matching the predicate, `mapToInt` converts the filtered `Stream<Integer>` to a primitive `IntStream` (avoiding boxing overhead for the sum), and `.sum()` reduces it to a total.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 5
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-006",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "OOP basics",
+    "title": "Simple class with encapsulation",
+    "prompt": "Write a Java class `BankAccount` with a private `double balance` field, a constructor that initializes it, and a method `deposit(double amount)` that increases the balance (rejecting negative amounts by throwing `IllegalArgumentException`).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public class BankAccount {\n    private double balance;\n\n    public BankAccount(double initialBalance) {\n        this.balance = initialBalance;\n    }\n\n    public void deposit(double amount) {\n        if (amount < 0) {\n            throw new IllegalArgumentException(\"Amount cannot be negative\");\n        }\n        balance += amount;\n    }\n\n    public double getBalance() {\n        return balance;\n    }\n}"
+    },
+    "explanation": "Keeping `balance` `private` and only exposing it through `deposit()` and a getter is basic encapsulation \u2014 it guarantees the balance can never be mutated in a way that bypasses the validation check.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 6
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-007",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Collections grouping",
+    "title": "Group words by length",
+    "prompt": "Write a Java method `Map<Integer, List<String>> groupByLength(List<String> words)` using streams that groups words by their length.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static Map<Integer, List<String>> groupByLength(List<String> words) {\n    return words.stream()\n                .collect(Collectors.groupingBy(String::length));\n}"
+    },
+    "explanation": "`Collectors.groupingBy(classifier)` is the Stream API's direct equivalent of a SQL `GROUP BY` \u2014 it partitions elements into a `Map` keyed by the classifier function's result, here `String::length`.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 7
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-008",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Custom Exceptions",
+    "title": "Define and throw a custom checked exception",
+    "prompt": "Write a custom checked exception `InsufficientFundsException` and a `withdraw(double amount)` method on a `BankAccount` class that throws it if `amount` exceeds the current balance.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public class InsufficientFundsException extends Exception {\n    public InsufficientFundsException(String message) {\n        super(message);\n    }\n}\n\n// inside BankAccount:\npublic void withdraw(double amount) throws InsufficientFundsException {\n    if (amount > balance) {\n        throw new InsufficientFundsException(\"Insufficient funds for withdrawal of \" + amount);\n    }\n    balance -= amount;\n}"
+    },
+    "explanation": "Extending `Exception` (not `RuntimeException`) makes it a checked exception, forcing callers to either catch it or declare `throws InsufficientFundsException` \u2014 appropriate here because insufficient funds is a recoverable business condition the caller should be forced to handle.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 8
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-009",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Generics",
+    "title": "Generic pair class",
+    "prompt": "Write a generic class `Pair<A, B>` holding two values of possibly different types, with getters and a `toString()` that prints them as `(a, b)`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public class Pair<A, B> {\n    private final A first;\n    private final B second;\n\n    public Pair(A first, B second) {\n        this.first = first;\n        this.second = second;\n    }\n\n    public A getFirst() { return first; }\n    public B getSecond() { return second; }\n\n    @Override\n    public String toString() {\n        return \"(\" + first + \", \" + second + \")\";\n    }\n}"
+    },
+    "explanation": "Type parameters `<A, B>` let the same class hold any pair of types safely at compile time (e.g. `Pair<String, Integer>`), avoiding both unchecked casts and the need to write a near-identical class for every type combination.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 9
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-010",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Multithreading basics",
+    "title": "Thread-safe counter",
+    "prompt": "Write a `Counter` class with an `increment()` method that is safe to call from multiple threads concurrently, and a `get()` method to read the current value.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public class Counter {\n    private final AtomicInteger count = new AtomicInteger(0);\n\n    public void increment() {\n        count.incrementAndGet();\n    }\n\n    public int get() {\n        return count.get();\n    }\n}"
+    },
+    "explanation": "`AtomicInteger` performs increments using lock-free CPU-level compare-and-swap operations, making `increment()` safe under concurrent access without needing an explicit `synchronized` block, and typically with better throughput under contention.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 10
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-011",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Comparable / Comparator",
+    "title": "Sort objects by multiple fields",
+    "prompt": "Given a class `Employee` with fields `name` and `salary`, write a `Comparator<Employee>` that sorts by salary descending, and by name ascending as a tiebreaker.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Comparator<Employee> byPay = Comparator\n    .comparingDouble(Employee::getSalary).reversed()\n    .thenComparing(Employee::getName);\n\nemployees.sort(byPay);"
+    },
+    "explanation": "`Comparator.comparingDouble(...).reversed()` builds the primary descending-salary comparator, and `.thenComparing(...)` chains a secondary comparator that only breaks ties when the primary comparison returns equal \u2014 the idiomatic Java 8+ way to build multi-key sorts.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 11
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-012",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Optional",
+    "title": "Avoid NullPointerException with Optional",
+    "prompt": "Write a method `String getCityOrDefault(Address address)` that returns `address.getCity()` if both `address` and its city are non-null, otherwise returns \"Unknown\", using `Optional`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static String getCityOrDefault(Address address) {\n    return Optional.ofNullable(address)\n                   .map(Address::getCity)\n                   .orElse(\"Unknown\");\n}"
+    },
+    "explanation": "`Optional.ofNullable` safely wraps a possibly-null `address`; `.map()` only applies `getCity()` if a value is present (and itself safely handles a null return from `getCity()` by producing an empty Optional), and `.orElse(\"Unknown\")` supplies the fallback in one fluent chain instead of nested null checks.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 12
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-HARD-013",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Concurrency",
+    "title": "Producer-consumer with BlockingQueue",
+    "prompt": "Write a minimal producer-consumer setup using `BlockingQueue` where a producer thread adds integers 1-10 to the queue and a consumer thread prints them as they arrive.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "BlockingQueue<Integer> queue = new LinkedBlockingQueue<>(5);\n\nThread producer = new Thread(() -> {\n    try {\n        for (int i = 1; i <= 10; i++) {\n            queue.put(i);\n        }\n    } catch (InterruptedException e) {\n        Thread.currentThread().interrupt();\n    }\n});\n\nThread consumer = new Thread(() -> {\n    try {\n        for (int i = 0; i < 10; i++) {\n            System.out.println(queue.take());\n        }\n    } catch (InterruptedException e) {\n        Thread.currentThread().interrupt();\n    }\n});\n\nproducer.start();\nconsumer.start();"
+    },
+    "explanation": "`BlockingQueue.put()` blocks the producer when the bounded queue (capacity 5) is full, and `.take()` blocks the consumer when it's empty, handling all the wait/notify coordination internally so the code never needs manual `synchronized`/`wait`/`notify` calls, and correctly re-interrupting the thread if interrupted while blocked.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 13
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-HARD-014",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Streams + custom collector",
+    "title": "Partition and summarize in one pass",
+    "prompt": "Write a Java stream pipeline over `List<Employee>` that produces a `Map<Boolean, Double>` where `true` maps to the total salary of employees earning >= 50000, and `false` maps to the total salary of the rest.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Map<Boolean, Double> result = employees.stream()\n    .collect(Collectors.partitioningBy(\n        e -> e.getSalary() >= 50000,\n        Collectors.summingDouble(Employee::getSalary)\n    ));"
+    },
+    "explanation": "`Collectors.partitioningBy` is a specialized two-bucket `groupingBy` for boolean predicates, guaranteeing both `true` and `false` keys always exist even if one bucket is empty. Passing a downstream collector (`summingDouble`) computes the sum per bucket in the same single pass instead of filtering the stream twice.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 14
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-HARD-015",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Memory & Garbage Collection",
+    "title": "Diagnose a memory leak from a static collection",
+    "prompt": "A long-running service has a `private static final Map<String, Session> cache = new HashMap<>();` that entries are added to but never removed from, causing an eventual OutOfMemoryError. Fix the design.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "private static final Map<String, Session> cache =\n    Collections.synchronizedMap(new WeakHashMap<>());\n\n// Or, for time-based expiry, use a proper cache library:\n// Cache<String, Session> cache = Caffeine.newBuilder()\n//     .expireAfterAccess(30, TimeUnit.MINUTES)\n//     .maximumSize(10_000)\n//     .build();"
+    },
+    "explanation": "A plain `static HashMap` holds strong references to every entry forever, so the garbage collector can never reclaim them \u2014 the textbook cause of a slow memory leak. `WeakHashMap` lets keys (and their entries) be collected once nothing else references them, but for production services the more robust fix is a real bounded/expiring cache (like Caffeine) with explicit size and time-based eviction policies rather than relying on GC-driven weak references.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 15
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-016",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "String methods",
+    "title": "Check if a string is a palindrome",
+    "prompt": "Write a Java method `isPalindrome(String s)` that returns true if the string reads the same forwards and backwards (case-sensitive).",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static boolean isPalindrome(String s) {\n    return s.equals(new StringBuilder(s).reverse().toString());\n}"
+    },
+    "explanation": "Reversing the string and comparing it to the original is the simplest correct check; for a case-insensitive or punctuation-ignoring version you'd normalize the string first with `toLowerCase()` and a regex strip.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 16
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-017",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Loops",
+    "title": "FizzBuzz",
+    "prompt": "Write a Java method that prints numbers 1 to 20, but prints \"Fizz\" for multiples of 3, \"Buzz\" for multiples of 5, and \"FizzBuzz\" for multiples of both.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "for (int i = 1; i <= 20; i++) {\n    if (i % 15 == 0) System.out.println(\"FizzBuzz\");\n    else if (i % 3 == 0) System.out.println(\"Fizz\");\n    else if (i % 5 == 0) System.out.println(\"Buzz\");\n    else System.out.println(i);\n}"
+    },
+    "explanation": "Checking divisibility by 15 first (not 3 then 5 separately) correctly catches the \"both\" case in one branch; checking 3 and 5 first without the 15 check would print \"Fizz\" and skip the FizzBuzz case entirely.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 17
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-018",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Arrays",
+    "title": "Check if an array contains a value",
+    "prompt": "Write a Java method `contains(int[] arr, int target)` that returns true if `target` appears anywhere in the array.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static boolean contains(int[] arr, int target) {\n    for (int n : arr) {\n        if (n == target) return true;\n    }\n    return false;\n}"
+    },
+    "explanation": "A linear scan returning early on the first match is O(n) and the simplest correct approach; `Arrays.stream(arr).anyMatch(n -> n == target)` is an equally valid one-liner using streams.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 18
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-019",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Wrapper classes & autoboxing",
+    "title": "Sum a List<Integer>",
+    "prompt": "Write a Java method `sum(List<Integer> nums)` that returns the sum of all values in the list, without using streams.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static int sum(List<Integer> nums) {\n    int total = 0;\n    for (Integer n : nums) {\n        total += n;\n    }\n    return total;\n}"
+    },
+    "explanation": "`total += n` auto-unboxes each `Integer` to a primitive `int` for the addition; this is safe here since the loop assumes no null elements \u2014 a defensive version would null-check `n` before adding to avoid a NullPointerException.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 19
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-020",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Inheritance",
+    "title": "Basic method overriding",
+    "prompt": "Write a base class `Shape` with a method `area()` returning 0.0, and a subclass `Circle` that overrides it to compute the actual area from a `radius` field.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public class Shape {\n    public double area() {\n        return 0.0;\n    }\n}\n\npublic class Circle extends Shape {\n    private double radius;\n\n    public Circle(double radius) {\n        this.radius = radius;\n    }\n\n    @Override\n    public double area() {\n        return Math.PI * radius * radius;\n    }\n}"
+    },
+    "explanation": "`@Override` isn't required by the compiler but is good practice \u2014 it makes the compiler verify the method actually overrides a superclass method (catching typos in the signature that would otherwise silently create a new, unrelated method instead).",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 20
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-EASY-021",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Interfaces",
+    "title": "Define and implement a simple interface",
+    "prompt": "Write an interface `Payable` with a method `double calculatePay()`, and a class `Employee` that implements it, returning a fixed monthly salary.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public interface Payable {\n    double calculatePay();\n}\n\npublic class Employee implements Payable {\n    private double monthlySalary;\n\n    public Employee(double monthlySalary) {\n        this.monthlySalary = monthlySalary;\n    }\n\n    @Override\n    public double calculatePay() {\n        return monthlySalary;\n    }\n}"
+    },
+    "explanation": "Interfaces define a contract (method signatures with no implementation, prior to Java 8's default methods) that any implementing class must fulfill \u2014 the compiler enforces that `Employee` provides a concrete `calculatePay()` body.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 21
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-022",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Collections - TreeMap",
+    "title": "Keep entries sorted by key automatically",
+    "prompt": "Write a Java snippet that stores product-name-to-price mappings in a way that iterating over them always returns entries sorted alphabetically by product name.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Map<String, Double> prices = new TreeMap<>();\nprices.put(\"Widget\", 9.99);\nprices.put(\"Apple\", 1.50);\nprices.put(\"Zebra Toy\", 14.00);\n\nfor (Map.Entry<String, Double> entry : prices.entrySet()) {\n    System.out.println(entry.getKey() + \": \" + entry.getValue());\n}"
+    },
+    "explanation": "`TreeMap` maintains its entries in sorted key order automatically (natural ordering by default, or a custom `Comparator`), unlike `HashMap` which has no guaranteed iteration order \u2014 the right choice whenever you need sorted iteration without a separate sort step.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 22
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-023",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "equals() and hashCode()",
+    "title": "Correctly override equals and hashCode",
+    "prompt": "Write a `Point` class with `x` and `y` int fields, correctly overriding `equals()` and `hashCode()` so two Points with the same coordinates are considered equal and usable as HashSet/HashMap keys.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public class Point {\n    private final int x, y;\n\n    public Point(int x, int y) {\n        this.x = x;\n        this.y = y;\n    }\n\n    @Override\n    public boolean equals(Object o) {\n        if (this == o) return true;\n        if (!(o instanceof Point)) return false;\n        Point p = (Point) o;\n        return x == p.x && y == p.y;\n    }\n\n    @Override\n    public int hashCode() {\n        return Objects.hash(x, y);\n    }\n}"
+    },
+    "explanation": "The contract requires that if two objects are `.equals()`, they must return the same `hashCode()` \u2014 breaking this (e.g. overriding only equals) causes objects to \"disappear\" from HashSet/HashMap lookups even though `.equals()` would say they match, because the hash-based lookup goes to the wrong bucket first.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 23
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-024",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "try-with-resources",
+    "title": "Automatically close a resource",
+    "prompt": "Write a Java snippet that reads all lines from `data.txt` using BufferedReader, ensuring the reader is closed automatically even if an exception occurs.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "try (BufferedReader reader = new BufferedReader(new FileReader(\"data.txt\"))) {\n    String line;\n    while ((line = reader.readLine()) != null) {\n        System.out.println(line);\n    }\n} catch (IOException e) {\n    System.err.println(\"Failed to read file: \" + e.getMessage());\n}"
+    },
+    "explanation": "Try-with-resources (any resource implementing `AutoCloseable`) guarantees `.close()` is called when the block exits, whether normally or via exception \u2014 eliminating the need for a manual `finally { reader.close(); }` block, which is easy to get wrong (e.g. forgetting a null-check if the resource failed to open).",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 24
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-025",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Enums with behavior",
+    "title": "Enum with a method per constant",
+    "prompt": "Write a Java enum `Operation` with constants ADD, SUBTRACT, each implementing an `apply(int a, int b)` method that performs the corresponding arithmetic.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public enum Operation {\n    ADD {\n        public int apply(int a, int b) { return a + b; }\n    },\n    SUBTRACT {\n        public int apply(int a, int b) { return a - b; }\n    };\n\n    public abstract int apply(int a, int b);\n}"
+    },
+    "explanation": "Declaring an abstract method on the enum and overriding it per-constant with a constant-specific class body avoids a switch statement entirely \u2014 adding a new operation later means adding a new constant with its own `apply()`, with the compiler ensuring nothing is missed.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 25
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-026",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Builder pattern",
+    "title": "Implement the builder pattern for an immutable object",
+    "prompt": "Write a `Pizza` class with optional fields `size`, `cheese`, `pepperoni`, constructed via a fluent builder, e.g. `new Pizza.Builder().size(\"Large\").cheese(true).build()`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public class Pizza {\n    private final String size;\n    private final boolean cheese;\n    private final boolean pepperoni;\n\n    private Pizza(Builder b) {\n        this.size = b.size;\n        this.cheese = b.cheese;\n        this.pepperoni = b.pepperoni;\n    }\n\n    public static class Builder {\n        private String size = \"Medium\";\n        private boolean cheese = false;\n        private boolean pepperoni = false;\n\n        public Builder size(String size) { this.size = size; return this; }\n        public Builder cheese(boolean cheese) { this.cheese = cheese; return this; }\n        public Builder pepperoni(boolean pepperoni) { this.pepperoni = pepperoni; return this; }\n\n        public Pizza build() { return new Pizza(this); }\n    }\n}"
+    },
+    "explanation": "The builder pattern avoids telescoping constructors (many overloaded constructors for every combination of optional fields) by letting each setter method return `this`, enabling fluent chaining, while keeping the final `Pizza` object itself immutable since its fields are only set once in the private constructor.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 26
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-MEDIUM-027",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Recursion",
+    "title": "Recursive factorial with overflow awareness",
+    "prompt": "Write a recursive Java method `factorial(int n)` using `long` to reduce (not eliminate) overflow risk, and explain the base case.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public static long factorial(int n) {\n    if (n < 0) throw new IllegalArgumentException(\"n must be non-negative\");\n    if (n <= 1) return 1L;\n    return n * factorial(n - 1);\n}"
+    },
+    "explanation": "The base case `n <= 1` returns 1 and stops the recursion \u2014 every recursive function needs at least one base case that doesn't recurse, or it will stack-overflow. Using `long` instead of `int` delays overflow (factorial grows so fast that even `long` overflows past 20!) but doesn't prevent it entirely, which is why the method should be documented with its valid input range.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 27
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-HARD-028",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "CompletableFuture",
+    "title": "Chain and combine async operations",
+    "prompt": "Write a Java snippet using CompletableFuture that fetches a user's profile and their order history concurrently, then combines both results once both complete.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "CompletableFuture<Profile> profileFuture = CompletableFuture.supplyAsync(() -> fetchProfile(userId));\nCompletableFuture<List<Order>> ordersFuture = CompletableFuture.supplyAsync(() -> fetchOrders(userId));\n\nCompletableFuture<UserSummary> combined = profileFuture.thenCombine(ordersFuture,\n    (profile, orders) -> new UserSummary(profile, orders));\n\nUserSummary result = combined.join();"
+    },
+    "explanation": "Running both `supplyAsync` calls first (before any blocking `.join()`) lets them execute concurrently on the common ForkJoinPool; `thenCombine` then waits for both futures and merges their results with the given function only once both have completed \u2014 noticeably faster than fetching the profile, then the orders, sequentially.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 28
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-HARD-029",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Custom annotations + reflection",
+    "title": "Build a simple annotation-driven validator",
+    "prompt": "Write a custom annotation `@Required` usable on fields, plus a method `validate(Object obj)` that uses reflection to throw an exception if any `@Required`-annotated field is null.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Retention(RetentionPolicy.RUNTIME)\n@Target(ElementType.FIELD)\npublic @interface Required {}\n\npublic static void validate(Object obj) throws IllegalAccessException {\n    for (Field field : obj.getClass().getDeclaredFields()) {\n        if (field.isAnnotationPresent(Required.class)) {\n            field.setAccessible(true);\n            if (field.get(obj) == null) {\n                throw new IllegalStateException(\"Field '\" + field.getName() + \"' is required but was null\");\n            }\n        }\n    }\n}"
+    },
+    "explanation": "`@Retention(RetentionPolicy.RUNTIME)` is essential \u2014 without it the annotation would be discarded after compilation and invisible to reflection at runtime. `field.setAccessible(true)` allows reading private fields, and `getDeclaredFields()` (vs `getFields()`) returns all fields regardless of access modifier, which the standard `getFields()` would skip for anything non-public.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 29
+  },
+  {
+    "subjectSlug": "java",
+    "subjectName": "Java",
+    "code": "JAVA-COD-HARD-030",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "JVM internals",
+    "title": "Explain and demonstrate a classic memory leak pattern",
+    "prompt": "Write a small Java example demonstrating how an inner (non-static) class can cause a memory leak by holding an implicit reference to its outer class, and show the fix.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "// LEAK: non-static inner class holds an implicit reference to Outer\npublic class Outer {\n    class Listener {\n        void onEvent() { /* ... */ }\n    }\n    Listener listener = new Listener();\n    // if 'listener' is registered somewhere long-lived (e.g. a static event bus),\n    // it keeps this entire Outer instance alive indefinitely\n}\n\n// FIX: make the inner class static so it doesn't hold an outer reference\npublic class OuterFixed {\n    static class Listener {\n        void onEvent() { /* ... */ }\n    }\n}"
+    },
+    "explanation": "Every non-static inner class instance secretly holds a reference to its enclosing outer instance (`Outer.this`), so if that inner instance is registered with something long-lived (a static collection, an event bus, a cache), the outer object \u2014 and everything it references \u2014 can never be garbage collected even after it's logically \"done\", because the inner object is still reachable and drags the outer one along with it.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 30
+  }
+]

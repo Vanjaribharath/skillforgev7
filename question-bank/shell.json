@@ -1,0 +1,602 @@
+[
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-001",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Variables",
+    "title": "Store and print command output",
+    "prompt": "Write a shell script snippet that stores today's date in a variable `TODAY` and prints \"Today is: <date>\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "TODAY=$(date +%F)\necho \"Today is: $TODAY\""
+    },
+    "explanation": "`$(command)` is command substitution \u2014 it runs `date` and captures stdout into the variable. `+%F` formats the date as YYYY-MM-DD. Double quotes let `$TODAY` expand inside the string.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 1
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-002",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Conditionals",
+    "title": "Check if a file exists",
+    "prompt": "Write an if-statement that prints \"Found\" if `/etc/app/config.yml` exists, otherwise prints \"Missing\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "if [ -f /etc/app/config.yml ]; then\n  echo \"Found\"\nelse\n  echo \"Missing\"\nfi"
+    },
+    "explanation": "`-f` is a test operator that is true when the path exists and is a regular file (not a directory). The `[ ]` syntax is the POSIX `test` command.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 2
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-003",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Loops",
+    "title": "Print numbers 1 to 5",
+    "prompt": "Write a for-loop that prints the numbers 1 through 5, one per line.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "for i in 1 2 3 4 5; do\n  echo $i\ndone"
+    },
+    "explanation": "A `for ... in` loop iterates over the listed words (here, the literal numbers). `$i` holds the current value on each iteration. `seq 1 5` is an equally valid alternative to the literal list.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 3
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-004",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Arguments",
+    "title": "Read a script argument",
+    "prompt": "Write a script that prints \"Hello, <name>\" where `<name>` is the first argument passed to the script, defaulting to \"World\" if no argument is given.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "NAME=${1:-World}\necho \"Hello, $NAME\""
+    },
+    "explanation": "`$1` is the first positional argument. `${1:-World}` uses parameter expansion to substitute the default \"World\" only when `$1` is unset or empty, without needing a separate if-check.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 4
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-005",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "String Comparison",
+    "title": "Compare two strings",
+    "prompt": "Write an if-statement that prints \"Match\" if variable `ENV` equals \"production\", otherwise prints \"Not production\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "if [ \"$ENV\" = \"production\" ]; then\n  echo \"Match\"\nelse\n  echo \"Not production\"\nfi"
+    },
+    "explanation": "Quoting `\"$ENV\"` prevents word-splitting/glob errors if the variable is empty or contains spaces. `=` (a single equals sign) is the POSIX string-equality test inside `[ ]`.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 5
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-006",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Exit Codes",
+    "title": "Check the last command's success",
+    "prompt": "Write a script snippet that runs `ping -c1 example.com` and prints \"UP\" if it succeeded, or \"DOWN\" if it failed.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "if ping -c1 example.com > /dev/null 2>&1; then\n  echo \"UP\"\nelse\n  echo \"DOWN\"\nfi"
+    },
+    "explanation": "Placing the command directly in the `if` uses its exit status (0 = success) as the condition \u2014 no need for a separate `$?` check. Redirecting stdout and stderr to `/dev/null` keeps the ping output from cluttering the script's output.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 6
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-007",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Functions",
+    "title": "Reusable logging function",
+    "prompt": "Write a shell function `log()` that prefixes any message passed to it with the current timestamp, e.g. `log \"Backup started\"` prints `[2026-07-02 10:15:00] Backup started`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "log() {\n  echo \"[$(date '+%Y-%m-%d %H:%M:%S')] $1\"\n}\n\nlog \"Backup started\""
+    },
+    "explanation": "Functions are defined with `name() { ... }`. Inside, `$1` refers to the function's first argument (separate from the script's own `$1`). This pattern is the backbone of consistent logging across ops scripts.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 7
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-008",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Arrays",
+    "title": "Loop over an array of hosts",
+    "prompt": "Given `HOSTS=(web1 web2 db1)`, write a loop that pings each host once and prints \"<host>: reachable\" or \"<host>: unreachable\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "HOSTS=(web1 web2 db1)\nfor host in \"${HOSTS[@]}\"; do\n  if ping -c1 \"$host\" > /dev/null 2>&1; then\n    echo \"$host: reachable\"\n  else\n    echo \"$host: unreachable\"\n  fi\ndone"
+    },
+    "explanation": "`\"${HOSTS[@]}\"` expands each array element as a separate, correctly-quoted word \u2014 critical if any hostname ever contains special characters. Looping directly over the array avoids manual index bookkeeping.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 8
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-009",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Error Handling",
+    "title": "Fail fast on any error",
+    "prompt": "Add the standard safety header to a deployment script so that it exits immediately if any command fails, if an unset variable is referenced, or if any command in a pipeline fails.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "#!/bin/bash\nset -euo pipefail"
+    },
+    "explanation": "`-e` exits on any non-zero exit status, `-u` treats unset variables as an error instead of silently expanding to empty, and `-o pipefail` makes a pipeline's exit status the first non-zero one instead of just the last command's \u2014 without it, `false | true` would report success.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 9
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-010",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Input Parsing",
+    "title": "Parse named command-line flags",
+    "prompt": "Write a script snippet that reads `--env=<value>` from its arguments and stores `<value>` in a variable `ENV`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "for arg in \"$@\"; do\n  case $arg in\n    --env=*)\n      ENV=\"${arg#*=}\"\n      ;;\n  esac\ndone\necho \"ENV=$ENV\""
+    },
+    "explanation": "`\"$@\"` expands all arguments individually. The `case` pattern `--env=*` matches any argument starting with `--env=`, and `${arg#*=}` strips everything up to and including the first `=`, leaving just the value.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 10
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-011",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "File Processing",
+    "title": "Process a file line by line",
+    "prompt": "Write a loop that reads `servers.txt` (one hostname per line) and echoes \"Checking: <hostname>\" for each line, correctly handling a file with no trailing newline.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "while IFS= read -r line || [ -n \"$line\" ]; do\n  echo \"Checking: $line\"\ndone < servers.txt"
+    },
+    "explanation": "`IFS=` preserves leading/trailing whitespace, `-r` stops backslashes from being interpreted as escapes, and `|| [ -n \"$line\" ]` ensures the final line is still processed even if the file doesn't end with a newline (otherwise `read` would return failure and skip it).",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 11
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-012",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Retry Logic",
+    "title": "Retry a flaky command",
+    "prompt": "Write a script snippet that retries `curl -sf https://api.example.com/health` up to 3 times with a 5-second pause between attempts, exiting with an error if all attempts fail.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "for attempt in 1 2 3; do\n  if curl -sf https://api.example.com/health; then\n    exit 0\n  fi\n  echo \"Attempt $attempt failed, retrying...\"\n  sleep 5\ndone\necho \"All attempts failed\" >&2\nexit 1"
+    },
+    "explanation": "`-f` makes curl fail (non-zero exit) on HTTP error codes, which is what the loop condition checks. Sending the final failure message to `>&2` (stderr) is standard practice for error output so it doesn't pollute stdout that other tools might parse.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 12
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-HARD-013",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Traps & Cleanup",
+    "title": "Guarantee cleanup on exit",
+    "prompt": "Write a script that creates a temp file, and guarantees the temp file is deleted whether the script exits normally, is interrupted (Ctrl+C), or errors out.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "#!/bin/bash\nTMPFILE=$(mktemp)\ntrap 'rm -f \"$TMPFILE\"' EXIT\n\n# ... use $TMPFILE ...\necho \"data\" > \"$TMPFILE\""
+    },
+    "explanation": "`trap ... EXIT` registers a cleanup command that bash runs on any script exit path \u2014 normal completion, `exit`, an uncaught error under `set -e`, or a signal like SIGINT \u2014 making it far more reliable than manually adding `rm` before every exit point.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 13
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-HARD-014",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Process Substitution",
+    "title": "Compare output of two commands",
+    "prompt": "Write a command that diffs the sorted contents of `list1.txt` and `list2.txt` without creating any intermediate temp files.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "diff <(sort list1.txt) <(sort list2.txt)"
+    },
+    "explanation": "`<(command)` is process substitution \u2014 bash runs the command and exposes its output as a file-like path (e.g. `/dev/fd/63`) that `diff` can read directly, avoiding the need to manually write sorted output to temp files first.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 14
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-HARD-015",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Parallel Execution",
+    "title": "Run tasks in parallel and wait",
+    "prompt": "Write a script that runs three backup functions (`backup_db`, `backup_files`, `backup_config`) concurrently and only continues once all three finish, failing the script if any of them failed.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "backup_db & pid1=$!\nbackup_files & pid2=$!\nbackup_config & pid3=$!\n\nwait $pid1 $pid2 $pid3\nstatus=$?\nif [ $status -ne 0 ]; then\n  echo \"One or more backups failed\" >&2\n  exit 1\nfi"
+    },
+    "explanation": "`&` backgrounds each function call; `$!` captures the PID of the most recently backgrounded process so it can be waited on individually. `wait` blocks until the listed PIDs finish and returns the exit status of the last one waited on, which is checked to decide overall success.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 15
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-016",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Arithmetic",
+    "title": "Basic integer arithmetic",
+    "prompt": "Write a shell snippet that adds two numbers stored in variables `A=5` and `B=3` and prints the result.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "A=5\nB=3\necho $((A + B))"
+    },
+    "explanation": "`$((...))` is arithmetic expansion \u2014 it evaluates the enclosed expression as integer math and substitutes the numeric result, without needing `expr` or external tools.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 16
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-017",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Here-documents",
+    "title": "Write multi-line text to a file",
+    "prompt": "Write a script snippet that writes a 2-line message into `notice.txt` using a heredoc.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "cat << 'EOF' > notice.txt\nMaintenance window tonight.\nExpect brief downtime.\nEOF"
+    },
+    "explanation": "A heredoc (`<< 'EOF' ... EOF`) lets you write multi-line literal text inline in a script; quoting `'EOF'` prevents variable expansion inside the block, useful when the text itself might contain `$` characters you don't want interpreted.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 17
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-018",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Command substitution",
+    "title": "Use a command's output as a filename",
+    "prompt": "Write a snippet that creates a backup file named `backup-<today's date>.tar.gz`, e.g. `backup-2026-07-02.tar.gz`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "tar -czf \"backup-$(date +%F).tar.gz\" /data"
+    },
+    "explanation": "`$(date +%F)` runs inside the double-quoted string and is replaced with today's date before the filename is used, letting you build dynamic filenames in one line.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 18
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-019",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Test operators",
+    "title": "Check if a variable is empty",
+    "prompt": "Write an if-statement that prints \"Missing DB_HOST\" if the environment variable `DB_HOST` is unset or empty.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "if [ -z \"$DB_HOST\" ]; then\n  echo \"Missing DB_HOST\"\nfi"
+    },
+    "explanation": "`-z` is true when the string is empty (zero length). Quoting `\"$DB_HOST\"` is important \u2014 without quotes, an unset variable could make the test syntactically break instead of evaluating cleanly.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 19
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-020",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Multiple conditions",
+    "title": "Combine two conditions with AND",
+    "prompt": "Write an if-statement that prints \"Ready\" only if both `/opt/app/bin` exists AND is executable.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "if [ -e /opt/app/bin ] && [ -x /opt/app/bin ]; then\n  echo \"Ready\"\nfi"
+    },
+    "explanation": "`&&` between two `[ ]` tests only runs (and requires success of) the second test if the first succeeds \u2014 the standard way to chain multiple conditions in POSIX shell without a single compound expression.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 20
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-EASY-021",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Case statement",
+    "title": "Branch on a value with case",
+    "prompt": "Write a case statement that prints \"Linux\", \"Mac\", or \"Unknown OS\" based on a variable `OS_TYPE` containing 'linux', 'darwin', or anything else.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "case $OS_TYPE in\n  linux) echo \"Linux\" ;;\n  darwin) echo \"Mac\" ;;\n  *) echo \"Unknown OS\" ;;\nesac"
+    },
+    "explanation": "`case` is cleaner than a chain of `if/elif` for matching one variable against several fixed values; `*)` acts as the catch-all default, matching anything not caught by an earlier pattern.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 21
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-022",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Here-strings & pipes",
+    "title": "Count words matching a pattern via pipeline",
+    "prompt": "Write a pipeline that counts how many lines in `deploy.log` contain the word \"FAILED\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "grep -c 'FAILED' deploy.log"
+    },
+    "explanation": "`grep -c` counts matching lines directly instead of needing to pipe through `wc -l` separately \u2014 a small but common shortcut once you know it exists.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 22
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-023",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Positional args & shift",
+    "title": "Process a variable number of arguments",
+    "prompt": "Write a script that prints each argument passed to it on its own line, prefixed with its position number, without knowing in advance how many arguments there are.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "i=1\nfor arg in \"$@\"; do\n  echo \"$i: $arg\"\n  i=$((i + 1))\ndone"
+    },
+    "explanation": "Looping over `\"$@\"` handles any number of arguments safely (each expands as its own quoted word), while a manually incremented counter `i` tracks position \u2014 an alternative using `shift` in a `while [ $# -gt 0 ]` loop is equally valid.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 23
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-024",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Local variables in functions",
+    "title": "Avoid polluting global scope in a function",
+    "prompt": "Write a function `calculate_total()` that uses a local variable for its intermediate sum so it doesn't leak into or overwrite any global variable also named `total`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "calculate_total() {\n  local total=0\n  for n in \"$@\"; do\n    total=$((total + n))\n  done\n  echo $total\n}"
+    },
+    "explanation": "`local` scopes a variable to the function it's declared in; without it, `total` inside the function would silently overwrite any global variable of the same name, a common source of bugs in longer scripts.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 24
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-025",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Signal handling",
+    "title": "Handle SIGTERM gracefully",
+    "prompt": "Write a long-running script skeleton that, when it receives SIGTERM, prints \"Shutting down gracefully...\" and exits cleanly instead of dying immediately.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "cleanup() {\n  echo \"Shutting down gracefully...\"\n  exit 0\n}\ntrap cleanup SIGTERM\n\nwhile true; do\n  sleep 1\ndone"
+    },
+    "explanation": "`trap cleanup SIGTERM` registers a handler function to run when the process receives that specific signal (e.g. from `kill` or `docker stop`), letting the script finish in-flight work or clean up resources instead of being killed mid-operation.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 25
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-026",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "String manipulation",
+    "title": "Extract a file extension",
+    "prompt": "Write a snippet that extracts the extension from a filename stored in `FILE=\"report.final.csv\"`, printing `csv`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "FILE=\"report.final.csv\"\necho \"${FILE##*.}\""
+    },
+    "explanation": "`${FILE##*.}` strips the longest match of `*.` from the front of the string, leaving only what's after the last dot \u2014 the standard parameter-expansion idiom for extracting a file extension without calling an external `basename`/`sed` process.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 26
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-MEDIUM-027",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Here-doc with variable substitution",
+    "title": "Generate a config file from a template",
+    "prompt": "Write a script snippet that generates `app.conf` from variables `PORT=8080` and `ENV=production`, embedding their values.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "PORT=8080\nENV=production\ncat << EOF > app.conf\nport=${PORT}\nenvironment=${ENV}\nEOF"
+    },
+    "explanation": "Using an unquoted `EOF` delimiter (unlike the earlier quoted `'EOF'` example) allows variable expansion inside the heredoc body, so `${PORT}` and `${ENV}` are substituted with their actual values as the file is written.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 27
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-HARD-028",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Named pipes",
+    "title": "Coordinate two processes with a FIFO",
+    "prompt": "Write a script that creates a named pipe, has one background process write lines to it, and a foreground process read and print them.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "mkfifo /tmp/mypipe\n\n(\n  echo \"line one\"\n  sleep 1\n  echo \"line two\"\n) > /tmp/mypipe &\n\nwhile read -r line < /tmp/mypipe; do\n  echo \"Received: $line\"\ndone\n\nrm /tmp/mypipe"
+    },
+    "explanation": "`mkfifo` creates a named pipe (FIFO) \u2014 a filesystem entry that behaves like an in-memory pipe but can be opened by unrelated processes by path, unlike an anonymous `|` pipe which only connects processes in the same pipeline.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 28
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-HARD-029",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Debugging",
+    "title": "Trace script execution for debugging",
+    "prompt": "Write the way you would run a script `deploy.sh` to print every command it executes, with variable values already substituted, before running it \u2014 for debugging a failure in CI.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "bash -x deploy.sh\n\n# or, to trace just one section inside the script itself:\nset -x\n# ... suspect code ...\nset +x"
+    },
+    "explanation": "`bash -x` (or `set -x` inline) prints each command to stderr, prefixed with `+`, after variable and command substitution has been applied \u2014 showing exactly what actually ran rather than the literal source, which is invaluable for CI failures that don't reproduce locally.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 29
+  },
+  {
+    "subjectSlug": "shell",
+    "subjectName": "Shell",
+    "code": "SHELL-COD-HARD-030",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Idempotent scripting",
+    "title": "Make a provisioning script safe to re-run",
+    "prompt": "Write a script snippet that creates a system user `appuser` and a directory `/opt/app`, safely re-runnable without erroring if either already exists.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "if ! id -u appuser >/dev/null 2>&1; then\n  useradd -r -s /usr/sbin/nologin appuser\nfi\n\nmkdir -p /opt/app\nchown appuser:appuser /opt/app"
+    },
+    "explanation": "`id -u appuser` fails (non-zero exit) if the user doesn't exist yet, so the `if !` guard only creates it when needed instead of erroring on a re-run. `mkdir -p` is already inherently idempotent \u2014 it silently succeeds if the directory already exists, unlike plain `mkdir`.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 30
+  }
+]

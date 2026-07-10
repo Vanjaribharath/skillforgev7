@@ -1,0 +1,602 @@
+[
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-001",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Basic Search",
+    "title": "Find errors from a specific source",
+    "prompt": "Write an SPL search that finds all events with `sourcetype=app_log` containing the word \"error\" in the last 24 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=app_log \"error\" earliest=-24h"
+    },
+    "explanation": "SPL searches start with filter terms; `sourcetype=` narrows to a specific log type, a bare quoted string does a full-text match, and `earliest=-24h` bounds the time range relative to now.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 1
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-002",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "stats count",
+    "title": "Count events per host",
+    "prompt": "Write an SPL query to count the number of events per `host` for `sourcetype=access_combined`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined | stats count by host"
+    },
+    "explanation": "`stats count by host` is the SPL equivalent of `GROUP BY` + `COUNT(*)` in SQL \u2014 it groups matching events by the `host` field and counts how many fall into each group.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 2
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-003",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Field extraction basics",
+    "title": "Show only two fields",
+    "prompt": "Write a query that searches `sourcetype=access_combined` and displays only the `clientip` and `status` fields.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined | table clientip, status"
+    },
+    "explanation": "`| table` restricts the output to the named fields in the order given, which is the simplest way to trim a wide event down to just what you need to see.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 3
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-004",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "top command",
+    "title": "Top 5 status codes",
+    "prompt": "Write an SPL query that shows the 5 most common HTTP `status` codes in `sourcetype=access_combined`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined | top limit=5 status"
+    },
+    "explanation": "`top` automatically counts occurrences of a field's values, sorts descending, and computes percentage of total \u2014 `limit=5` caps it to the top 5 rows, saving you from writing `stats count by status | sort -count | head 5` by hand.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 4
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-005",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "sort",
+    "title": "Most recent 10 failed logins",
+    "prompt": "Write a query that finds events where `action=failure` in `sourcetype=auth_log` and shows the 10 most recent ones.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=auth_log action=failure | sort -_time | head 10"
+    },
+    "explanation": "`_time` is Splunk's internal timestamp field; sorting by `-_time` puts the newest events first, and `head 10` keeps only the first 10 rows of that sorted result.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 5
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-006",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "rex basics",
+    "title": "Extract an order ID with rex",
+    "prompt": "Given events containing the text `order_id=12345`, write a query to extract the numeric order ID into a field called `orderId`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=orders | rex field=_raw \"order_id=(?<orderId>\\d+)\""
+    },
+    "explanation": "`rex` applies a regular expression to a field (here `_raw`, the full raw event text) and any named capture group \u2014 `(?<orderId>...)` \u2014 becomes a new searchable field on the fly, without needing a permanent field extraction defined.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 6
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-007",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "timechart",
+    "title": "Requests per 5-minute interval",
+    "prompt": "Write an SPL query that charts the count of events for `sourcetype=access_combined` in 5-minute buckets over the last 4 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined earliest=-4h | timechart span=5m count"
+    },
+    "explanation": "`timechart` buckets events into time intervals set by `span=` and computes an aggregate (here `count`) per bucket \u2014 the standard way to build a time-series trend chart in Splunk.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 7
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-008",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "eval",
+    "title": "Flag slow requests",
+    "prompt": "Given events with a `response_time` field in milliseconds, write a query that adds a field `is_slow` set to \"yes\" when `response_time` exceeds 2000, otherwise \"no\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined | eval is_slow=if(response_time>2000, \"yes\", \"no\")"
+    },
+    "explanation": "`eval` creates or overwrites a field using an expression evaluated per event; `if(condition, true_value, false_value)` is SPL's inline conditional, directly analogous to a `CASE WHEN` in SQL.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 8
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-009",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "stats multiple aggregates",
+    "title": "Average and max response time per endpoint",
+    "prompt": "Write a query that shows, for each `uri_path`, the average and maximum `response_time`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined | stats avg(response_time) AS avg_rt, max(response_time) AS max_rt by uri_path"
+    },
+    "explanation": "`stats` accepts multiple aggregate functions in one pass, each aliased with `AS` for a readable column name, all grouped `by uri_path` in a single, efficient scan of the data.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 9
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-010",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "where + subsearch",
+    "title": "Hosts with more errors than a threshold",
+    "prompt": "Write a query that lists hosts where the count of `level=ERROR` events exceeds 100 in the last 24 hours.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=app_log level=ERROR earliest=-24h | stats count by host | where count > 100"
+    },
+    "explanation": "`stats` first computes the per-host error count, then the pipe into `where count > 100` filters that aggregated result \u2014 equivalent to a `HAVING` clause in SQL, since `where` here runs on already-summarized data.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 10
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-011",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "lookup",
+    "title": "Enrich events with a lookup table",
+    "prompt": "Given a lookup table `department_lookup.csv` mapping `employee_id` to `department`, write a query that enriches `sourcetype=badge_swipes` events with the department name.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=badge_swipes | lookup department_lookup.csv employee_id OUTPUT department"
+    },
+    "explanation": "`lookup` joins each event to a matching row in the CSV lookup table on the shared `employee_id` field and adds the specified `OUTPUT` field(s) \u2014 Splunk's equivalent of a SQL `JOIN` against a small reference table.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 11
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-012",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "transaction",
+    "title": "Group multi-event sessions",
+    "prompt": "Write a query that groups `sourcetype=web_events` into sessions by `session_id`, where a new session starts if there's a gap of more than 30 minutes between events.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=web_events | transaction session_id maxpause=30m"
+    },
+    "explanation": "`transaction` stitches related events together into a single multi-value \"transaction\" event grouped by the given field(s); `maxpause=30m` splits the grouping whenever the gap between consecutive events for the same `session_id` exceeds 30 minutes.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 12
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-HARD-013",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "eventstats + eval",
+    "title": "Percent of daily traffic per host",
+    "prompt": "Write a query that, for each event in `sourcetype=access_combined` today, computes what percentage of the day's total events came from that event's `host`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined earliest=@d\n| eventstats count AS total\n| stats count AS host_count by host, total\n| eval pct=round((host_count/total)*100, 2)"
+    },
+    "explanation": "`eventstats` computes an aggregate (`total` events overall) and attaches that same value back onto every event without collapsing rows, unlike `stats`. This lets a later `stats ... by host` compute per-host counts while `total` is still available for the percentage `eval`.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 13
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-HARD-014",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Correlation search",
+    "title": "Detect brute-force login attempts",
+    "prompt": "Write an SPL query that flags any source IP with 5 or more failed logins (`action=failure`) within a 10-minute window in `sourcetype=auth_log`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=auth_log action=failure\n| bin _time span=10m\n| stats count by src_ip, _time\n| where count >= 5"
+    },
+    "explanation": "`bin _time span=10m` rounds each event's timestamp down into 10-minute buckets, so grouping `by src_ip, _time` afterward effectively counts failures per IP *per 10-minute window* rather than across the whole search range \u2014 the core pattern behind Splunk correlation/detection searches.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 14
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-HARD-015",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Performance tuning",
+    "title": "Optimize a slow wildcard search",
+    "prompt": "A search `sourcetype=access_combined *checkout* | stats count` is scanning the entire index slowly. Rewrite it to be more efficient, and explain the key change.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "index=web sourcetype=access_combined \"checkout\" earliest=-1h latest=now\n| stats count"
+    },
+    "explanation": "Two changes matter most: adding an explicit `index=` so Splunk doesn't have to search every index the user has access to, and replacing the leading wildcard `*checkout*` with a plain term search `\"checkout\"` \u2014 leading wildcards defeat Splunk's indexed term lookup and force a much slower scan, plus a bounded time range avoids scanning the full retention period.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 15
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-016",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Field filtering",
+    "title": "Exclude a field from results",
+    "prompt": "Write a query that searches `sourcetype=access_combined` and shows all fields except `cookie`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined | fields - cookie"
+    },
+    "explanation": "`| fields - fieldname` removes a specific field from the result set (as opposed to `| fields fieldname` which would keep only that field), useful for dropping noisy or sensitive fields before display.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 16
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-017",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "dedup",
+    "title": "Remove duplicate events by field",
+    "prompt": "Write a query that returns one event per unique `user_id` from `sourcetype=login_events`, keeping only the most recent event for each user.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=login_events | sort -_time | dedup user_id"
+    },
+    "explanation": "`dedup` keeps only the first event it sees for each unique value of the given field; sorting by `-_time` first ensures that \"first seen\" corresponds to \"most recent\", since dedup itself doesn't sort.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 17
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-018",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "stats values()",
+    "title": "List distinct values per group",
+    "prompt": "Write a query that shows, for each `host`, the distinct list of `status` codes seen.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined | stats values(status) AS statuses by host"
+    },
+    "explanation": "`values()` collects every distinct value of a field within each group into a multi-value result, unlike `list()` which keeps duplicates and preserves order.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 18
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-019",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Boolean search operators",
+    "title": "Search with OR across sourcetypes",
+    "prompt": "Write a query that returns events from either `sourcetype=app_log` or `sourcetype=db_log` that contain \"timeout\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "(sourcetype=app_log OR sourcetype=db_log) \"timeout\""
+    },
+    "explanation": "Parentheses group the OR condition so it's evaluated together before the implicit AND with the free-text \"timeout\" term \u2014 without them, operator precedence could produce a different, unintended filter.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 19
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-020",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "head/tail",
+    "title": "First and last events in a search",
+    "prompt": "Write two queries: one showing the 3 earliest events and one showing the 3 latest events from `sourcetype=deploy_log` today.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=deploy_log | sort _time | head 3\n\nsourcetype=deploy_log | sort -_time | head 3"
+    },
+    "explanation": "Splunk search results default to reverse-chronological order, so `sort _time` (ascending) then `head` gets the earliest events, while `sort -_time` (descending) then `head` gets the latest.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 20
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-EASY-021",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Time modifiers",
+    "title": "Search a specific date range",
+    "prompt": "Write a query that searches `sourcetype=billing` events between July 1, 2026 and July 2, 2026.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=billing earliest=07/01/2026:00:00:00 latest=07/02/2026:00:00:00"
+    },
+    "explanation": "`earliest=` and `latest=` accept absolute timestamps in `MM/DD/YYYY:HH:MM:SS` format when you need an exact date range instead of a relative one like `-24h`.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 21
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-022",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "chart",
+    "title": "Cross-tabulate status by host",
+    "prompt": "Write a query that produces a table with `host` as rows and `status` codes as columns, each cell showing the event count.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined | chart count by host, status"
+    },
+    "explanation": "`chart ... by field1, field2` cross-tabulates two dimensions into a table \u2014 the first field becomes rows and the second becomes columns \u2014 which `stats ... by` alone cannot do since stats only produces one row per group combination, not a pivoted grid.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 22
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-023",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "fillnull",
+    "title": "Handle missing values before charting",
+    "prompt": "Write a query that charts average `response_time` per 5-minute interval, ensuring any interval with no data shows 0 instead of a gap.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=access_combined | timechart span=5m avg(response_time) | fillnull value=0"
+    },
+    "explanation": "`timechart` can leave gaps for buckets with no matching events; `fillnull value=0` replaces those null cells with 0 so charting libraries render a continuous line instead of breaking it.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 23
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-024",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "append/appendcols",
+    "title": "Combine results from two different searches",
+    "prompt": "Write a query that shows total order count alongside total revenue, computed from two different sourcetypes (`orders` and `payments`), as a single result row.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=orders | stats count AS order_count\n| appendcols [search sourcetype=payments | stats sum(amount) AS total_revenue]"
+    },
+    "explanation": "`appendcols` runs a second subsearch and adds its result columns side-by-side onto the first search's results (matched by row position, not by any join key) \u2014 useful when combining two independent aggregate numbers into one summary row.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 24
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-025",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "makeresults + eval",
+    "title": "Generate a static reference row",
+    "prompt": "Write a query that creates a single synthetic result row with a field `threshold` set to 500, useful as a comparison baseline in a dashboard.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "| makeresults | eval threshold=500"
+    },
+    "explanation": "`makeresults` generates one empty result row with no underlying index search, which `eval` can then populate with computed or literal fields \u2014 commonly used to inject constants or reference lines into a dashboard panel.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 25
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-026",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "multivalue fields",
+    "title": "Expand a multivalue field into separate events",
+    "prompt": "Given events with a multivalue field `tags` (e.g. [\"prod\", \"critical\"]), write a query that produces one event per tag value.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=incidents | mvexpand tags"
+    },
+    "explanation": "`mvexpand` duplicates an event once per value in the specified multivalue field, turning a single event with 2 tag values into 2 separate events \u2014 necessary before you can `stats count by tags` and get a per-tag breakdown instead of counting the whole multivalue combination as one bucket.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 26
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-MEDIUM-027",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Saved searches / alerts",
+    "title": "Design an alert for repeated failures",
+    "prompt": "Describe the SPL and trigger condition for a saved search alert that fires when more than 10 payment failures occur in a rolling 15-minute window.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Search: sourcetype=payments status=failed\nSchedule: run every 5 minutes, search range earliest=-15m\nTrigger condition: Number of results > 10"
+    },
+    "explanation": "Splunk alerts are a saved search plus a schedule plus a trigger condition evaluated on the search's result count (or a custom condition); running the search on a schedule shorter than the lookback window (5 min schedule, 15 min lookback) ensures overlapping windows don't miss a burst that happens to straddle a scheduled run boundary.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 27
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-HARD-028",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "streamstats",
+    "title": "Flag consecutive failed logins per user",
+    "prompt": "Write a query that flags a user as `is_brute_force=true` if they have 5 or more consecutive failed logins with no successful login in between, using streamstats.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=auth_log\n| sort user, _time\n| streamstats count AS consecutive_failures BY user RESET_ON action=\"success\"\n| where action=\"failure\" AND consecutive_failures >= 5\n| eval is_brute_force=true"
+    },
+    "explanation": "`streamstats` computes a running aggregate event-by-event (unlike `stats`, which collapses to one row per group) and its `RESET_ON` clause restarts the count whenever a `success` event is seen for that user \u2014 precisely modeling \"consecutive failures since the last success\" rather than a total failure count across the whole search window.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 28
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-HARD-029",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Subsearch for dynamic filtering",
+    "title": "Find events only for currently-active hosts",
+    "prompt": "Given a lookup or search that identifies currently active hosts, write a query that filters `sourcetype=metrics` events to only those hosts, without hardcoding the host list.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "sourcetype=metrics\n[ search sourcetype=host_inventory status=active | fields host | format ]"
+    },
+    "explanation": "A bracketed subsearch runs first and its results are converted (via the implicit `format` command) into a search filter like `(host=\"web1\" OR host=\"web2\" OR ...)`, dynamically injected into the outer search \u2014 letting the active-host list come from live data instead of a hardcoded list that would go stale.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 29
+  },
+  {
+    "subjectSlug": "splunk",
+    "subjectName": "Splunk",
+    "code": "SPLUNK-COD-HARD-030",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Data model acceleration",
+    "title": "Explain when to use an accelerated data model over raw search",
+    "prompt": "A dashboard runs the same `stats count by host, sourcetype` search over 30 days of data on every page load, and it's slow. Describe the fix using Splunk's data model acceleration, and why it helps.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "Create a Splunk data model over the relevant event types, enable acceleration on it, and point the dashboard's search at the accelerated data model (via `| tstats count from datamodel=<model> by host, sourcetype`) instead of the raw `stats` search."
+    },
+    "explanation": "Data model acceleration pre-builds and maintains summary indexes (essentially materialized rollups) in the background, so `tstats` queries against an accelerated data model read from that pre-aggregated summary instead of re-scanning 30 days of raw events on every dashboard load \u2014 trading some indexing-time overhead for dramatically faster repeated query performance, which is the standard Splunk pattern for exactly this \"slow recurring dashboard search\" complaint.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 30
+  }
+]

@@ -1,0 +1,63 @@
+name: Deploy
+
+# Deploys the backend to Railway and verifies it actually came up healthy
+# afterward — not just that the CLI exited 0.
+#
+# Required GitHub Secret:
+#   RAILWAY_TOKEN        — Railway dashboard → Project Settings → Tokens
+#                           (create a *Project Token*, not an account token)
+# Optional GitHub Secret (recommended):
+#   RAILWAY_PUBLIC_URL   — your Railway public URL, e.g.
+#                           https://your-app.up.railway.app
+#                           Enables the post-deploy health verification
+#                           below. Without it, deploy still runs, but this
+#                           workflow can't confirm the app came up healthy.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "railway.json"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      # No --detach: this blocks until Railway reports the deployment's
+      # real terminal status (success/crash), not just "build was queued".
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up
+
+      - name: Verify deployment health
+        env:
+          HEALTH_URL: ${{ secrets.RAILWAY_PUBLIC_URL }}
+        run: |
+          if [ -z "$HEALTH_URL" ]; then
+            echo "::warning::RAILWAY_PUBLIC_URL secret not set — skipping post-deploy health verification."
+            echo "Set it in GitHub Secrets to let this workflow confirm the app is actually serving traffic."
+            exit 0
+          fi
+          echo "Waiting for ${HEALTH_URL}/actuator/health to report UP..."
+          for i in $(seq 1 20); do
+            STATUS=$(curl -s -o /tmp/health.json -w "%{http_code}" "${HEALTH_URL}/actuator/health" || echo "000")
+            if [ "$STATUS" = "200" ] && grep -q '"status":"UP"' /tmp/health.json; then
+              echo "Health check passed on attempt $i."
+              cat /tmp/health.json
+              exit 0
+            fi
+            echo "Attempt $i/20: HTTP $STATUS, retrying in 10s..."
+            sleep 10
+          done
+          echo "::error::Health check did not pass within 200s of deploy finishing."
+          exit 1

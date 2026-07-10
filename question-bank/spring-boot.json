@@ -1,0 +1,602 @@
+[
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-001",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "REST Controllers",
+    "title": "Basic GET endpoint",
+    "prompt": "Write a Spring Boot REST controller with a GET endpoint `/api/hello` that returns the plain text \"Hello, Spring Boot!\".",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@RestController\npublic class HelloController {\n\n    @GetMapping(\"/api/hello\")\n    public String hello() {\n        return \"Hello, Spring Boot!\";\n    }\n}"
+    },
+    "explanation": "`@RestController` combines `@Controller` and `@ResponseBody`, so returned values are written directly to the HTTP response body (as plain text or JSON) rather than resolved as a view name.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 1
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-002",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Path Variables",
+    "title": "GET endpoint with a path variable",
+    "prompt": "Write a GET endpoint `/api/users/{id}` that returns the string \"User: <id>\" using the path variable.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@GetMapping(\"/api/users/{id}\")\npublic String getUser(@PathVariable Long id) {\n    return \"User: \" + id;\n}"
+    },
+    "explanation": "`{id}` in the mapping path is a URI template variable, and `@PathVariable` binds it to the method parameter by matching name (or explicit `@PathVariable(\"id\")` if the names differ).",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 2
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-003",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Request Body",
+    "title": "POST endpoint accepting JSON",
+    "prompt": "Write a POST endpoint `/api/products` that accepts a JSON body mapping to a `Product` record (`name`, `price`) and returns it back with HTTP 201.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@PostMapping(\"/api/products\")\npublic ResponseEntity<Product> createProduct(@RequestBody Product product) {\n    return ResponseEntity.status(HttpStatus.CREATED).body(product);\n}"
+    },
+    "explanation": "`@RequestBody` tells Spring to deserialize the incoming JSON payload into the `Product` object using Jackson. Wrapping the return in `ResponseEntity` lets you control the exact HTTP status code (201 Created) instead of the default 200.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 3
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-004",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "application.properties",
+    "title": "Configure the server port",
+    "prompt": "Write the `application.properties` entry to make a Spring Boot app run on port 9090 instead of the default 8080.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "server.port=9090"
+    },
+    "explanation": "Spring Boot reads well-known configuration keys like `server.port` from `application.properties` (or `application.yml`) at startup to override embedded Tomcat's default port.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 4
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-005",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Dependency Injection",
+    "title": "Inject a service into a controller",
+    "prompt": "Write a `ProductService` bean and a controller that injects it via constructor injection to expose a GET `/api/products` endpoint returning `service.findAll()`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Service\npublic class ProductService {\n    public List<Product> findAll() {\n        return List.of(new Product(\"Widget\", 9.99));\n    }\n}\n\n@RestController\npublic class ProductController {\n    private final ProductService service;\n\n    public ProductController(ProductService service) {\n        this.service = service;\n    }\n\n    @GetMapping(\"/api/products\")\n    public List<Product> getAll() {\n        return service.findAll();\n    }\n}"
+    },
+    "explanation": "`@Service` registers `ProductService` as a Spring-managed bean. Constructor injection (a single constructor, no `@Autowired` needed since Spring 4.3+) is the recommended DI style because it makes dependencies explicit and the class easy to unit test without a Spring context.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 5
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-006",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Spring Data JPA basics",
+    "title": "Basic repository interface",
+    "prompt": "Given a `Product` JPA entity, write a Spring Data JPA repository interface that provides CRUD operations without any implementation code.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public interface ProductRepository extends JpaRepository<Product, Long> {\n}"
+    },
+    "explanation": "Extending `JpaRepository<Product, Long>` (entity type, ID type) automatically provides `save`, `findById`, `findAll`, `deleteById`, and more at runtime via a Spring-generated proxy \u2014 no manual implementation is written.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 6
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-007",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Validation",
+    "title": "Validate a request body",
+    "prompt": "Add validation to a `CreateUserRequest` DTO so `email` must be non-blank and a valid email format, and wire up the controller to reject invalid requests with 400.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public class CreateUserRequest {\n    @NotBlank\n    @Email\n    private String email;\n    // getters/setters\n}\n\n@PostMapping(\"/api/users\")\npublic ResponseEntity<Void> createUser(@Valid @RequestBody CreateUserRequest request) {\n    // ...\n    return ResponseEntity.ok().build();\n}"
+    },
+    "explanation": "`@NotBlank`/`@Email` are Bean Validation annotations on the DTO fields; adding `@Valid` before `@RequestBody` in the controller tells Spring to run those validations automatically and, on failure, throw a `MethodArgumentNotValidException` that Spring's default handler converts into an HTTP 400 response.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 7
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-008",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Exception Handling",
+    "title": "Global exception handler",
+    "prompt": "Write a `@RestControllerAdvice` that catches a custom `ProductNotFoundException` anywhere in the app and returns a JSON error body with HTTP 404.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@RestControllerAdvice\npublic class GlobalExceptionHandler {\n\n    @ExceptionHandler(ProductNotFoundException.class)\n    public ResponseEntity<Map<String, String>> handleNotFound(ProductNotFoundException ex) {\n        return ResponseEntity.status(HttpStatus.NOT_FOUND)\n                .body(Map.of(\"error\", ex.getMessage()));\n    }\n}"
+    },
+    "explanation": "`@RestControllerAdvice` applies exception handling globally across all controllers rather than duplicating try/catch logic in each one. `@ExceptionHandler` maps a specific exception type to a handler method that builds the actual error response.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 8
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-009",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Custom queries",
+    "title": "Derived query method",
+    "prompt": "Write a Spring Data JPA repository method that finds all products with `price` less than a given value, without writing any JPQL.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public interface ProductRepository extends JpaRepository<Product, Long> {\n    List<Product> findByPriceLessThan(double price);\n}"
+    },
+    "explanation": "Spring Data JPA parses the method name (`findBy` + `Price` + `LessThan`) and generates the corresponding query automatically at startup \u2014 a \"derived query method\" \u2014 so no `@Query` annotation or manual JPQL is needed for simple conditions like this.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 9
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-010",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Transactions",
+    "title": "Transactional service method",
+    "prompt": "Write a `transferFunds(Long fromId, Long toId, double amount)` service method that debits one account and credits another, ensuring both updates succeed or both roll back together.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Service\npublic class AccountService {\n    private final AccountRepository repo;\n\n    public AccountService(AccountRepository repo) { this.repo = repo; }\n\n    @Transactional\n    public void transferFunds(Long fromId, Long toId, double amount) {\n        Account from = repo.findById(fromId).orElseThrow();\n        Account to = repo.findById(toId).orElseThrow();\n        from.setBalance(from.getBalance() - amount);\n        to.setBalance(to.getBalance() + amount);\n        repo.save(from);\n        repo.save(to);\n    }\n}"
+    },
+    "explanation": "`@Transactional` wraps the whole method in a single database transaction; if any exception is thrown partway through (e.g. the second `findById` fails), Spring automatically rolls back both changes so the accounts are never left in an inconsistent half-updated state.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 10
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-011",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Configuration properties",
+    "title": "Type-safe external configuration",
+    "prompt": "Write a `@ConfigurationProperties` class that binds a `mail.host` and `mail.port` property from `application.properties` into typed fields.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Component\n@ConfigurationProperties(prefix = \"mail\")\npublic class MailProperties {\n    private String host;\n    private int port;\n\n    public String getHost() { return host; }\n    public void setHost(String host) { this.host = host; }\n    public int getPort() { return port; }\n    public void setPort(int port) { this.port = port; }\n}"
+    },
+    "explanation": "`@ConfigurationProperties(prefix = \"mail\")` binds any `mail.*` property (e.g. `mail.host=smtp.example.com`) to a matching setter, giving compile-time-safe, typed access to configuration instead of scattering `@Value(\"${mail.host}\")` across multiple classes.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 11
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-012",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Testing",
+    "title": "Slice test for a REST controller",
+    "prompt": "Write a `@WebMvcTest` for `ProductController` that mocks `ProductService` and asserts a GET `/api/products/1` returns HTTP 200 with the expected JSON.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@WebMvcTest(ProductController.class)\nclass ProductControllerTest {\n\n    @Autowired\n    private MockMvc mockMvc;\n\n    @MockBean\n    private ProductService service;\n\n    @Test\n    void returnsProduct() throws Exception {\n        when(service.findById(1L)).thenReturn(new Product(\"Widget\", 9.99));\n\n        mockMvc.perform(get(\"/api/products/1\"))\n               .andExpect(status().isOk())\n               .andExpect(jsonPath(\"$.name\").value(\"Widget\"));\n    }\n}"
+    },
+    "explanation": "`@WebMvcTest` loads only the web layer (controllers, filters, JSON mapping) instead of the full application context, which is much faster than `@SpringBootTest`. `@MockBean` replaces the real `ProductService` with a Mockito mock so the test can control its behavior in isolation, and `MockMvc` simulates the HTTP request without starting a real server.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 12
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-HARD-013",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Security",
+    "title": "Secure an endpoint by role",
+    "prompt": "Write the Spring Security configuration and method-level annotation needed so that only users with role `ADMIN` can call `DELETE /api/products/{id}`.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Configuration\n@EnableMethodSecurity\npublic class SecurityConfig {\n\n    @Bean\n    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n        return http\n            .authorizeHttpRequests(auth -> auth\n                .requestMatchers(HttpMethod.DELETE, \"/api/products/**\").hasRole(\"ADMIN\")\n                .anyRequest().authenticated())\n            .build();\n    }\n}\n\n// In the controller:\n@PreAuthorize(\"hasRole('ADMIN')\")\n@DeleteMapping(\"/api/products/{id}\")\npublic void deleteProduct(@PathVariable Long id) { /* ... */ }"
+    },
+    "explanation": "The `SecurityFilterChain` rule enforces the role at the URL/HTTP-method level as the first line of defense, while `@PreAuthorize` (enabled by `@EnableMethodSecurity`) adds a second, defense-in-depth check directly on the method \u2014 useful because it's still enforced even if the method is later called from somewhere the URL-based rule doesn't cover, like an internal service call.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 13
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-HARD-014",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Async & Resilience",
+    "title": "Circuit breaker around an external call",
+    "prompt": "Write a service method that calls an external payment API, wrapped with a Resilience4j circuit breaker that falls back to a queued-for-retry response if the circuit is open.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Service\npublic class PaymentService {\n    private final PaymentClient client;\n\n    public PaymentService(PaymentClient client) { this.client = client; }\n\n    @CircuitBreaker(name = \"paymentApi\", fallbackMethod = \"fallback\")\n    public PaymentResult charge(PaymentRequest request) {\n        return client.charge(request);\n    }\n\n    private PaymentResult fallback(PaymentRequest request, Throwable t) {\n        return PaymentResult.queuedForRetry(request.getOrderId());\n    }\n}"
+    },
+    "explanation": "`@CircuitBreaker` (Resilience4j's Spring Boot integration) tracks the call's failure rate against `paymentApi`'s configured thresholds; once the circuit trips open, subsequent calls skip the real `client.charge()` entirely and go straight to `fallbackMethod`, protecting the system from cascading failures when the payment provider is degraded.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 14
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-HARD-015",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Caching + cache eviction",
+    "title": "Cache a lookup and evict it on update",
+    "prompt": "Write a `ProductService` where `getProduct(id)` is cached, and `updateProduct(id, ...)` correctly evicts that specific cache entry so stale data is never served after an update.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Service\npublic class ProductService {\n    private final ProductRepository repo;\n\n    public ProductService(ProductRepository repo) { this.repo = repo; }\n\n    @Cacheable(value = \"products\", key = \"#id\")\n    public Product getProduct(Long id) {\n        return repo.findById(id).orElseThrow();\n    }\n\n    @CacheEvict(value = \"products\", key = \"#id\")\n    public Product updateProduct(Long id, ProductUpdateRequest update) {\n        Product p = repo.findById(id).orElseThrow();\n        p.setPrice(update.getPrice());\n        return repo.save(p);\n    }\n}"
+    },
+    "explanation": "`@Cacheable(key = \"#id\")` stores each product under a cache key derived from its id, avoiding a database hit on repeated reads. Critically, `@CacheEvict` on `updateProduct` uses the *same* key expression so the exact stale entry is removed on write \u2014 a mismatched or missing eviction here is one of the most common real-world Spring caching bugs, since reads would keep serving outdated data indefinitely.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 15
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-016",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Query Parameters",
+    "title": "GET endpoint with optional query param",
+    "prompt": "Write a GET endpoint `/api/search` that accepts an optional `keyword` query parameter, defaulting to an empty string if not provided.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@GetMapping(\"/api/search\")\npublic String search(@RequestParam(defaultValue = \"\") String keyword) {\n    return \"Searching for: \" + keyword;\n}"
+    },
+    "explanation": "`@RequestParam(defaultValue = \"\")` makes the parameter optional and supplies a fallback value automatically if it's missing from the request, avoiding a manual null check in the method body.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 16
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-017",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "ResponseEntity",
+    "title": "Return different status codes based on a result",
+    "prompt": "Write a GET `/api/products/{id}` endpoint that returns the product with HTTP 200 if found, or HTTP 404 with no body if not found.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@GetMapping(\"/api/products/{id}\")\npublic ResponseEntity<Product> getProduct(@PathVariable Long id) {\n    Optional<Product> product = service.findById(id);\n    return product.map(ResponseEntity::ok)\n                  .orElseGet(() -> ResponseEntity.notFound().build());\n}"
+    },
+    "explanation": "Returning `ResponseEntity<T>` instead of a bare `T` lets the method control the exact HTTP status per outcome; `Optional.map`/`orElseGet` cleanly express the two branches without an explicit if/else.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 17
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-018",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Lombok basics",
+    "title": "Reduce boilerplate with Lombok",
+    "prompt": "Write a `Product` class with `name` and `price` fields using Lombok annotations to auto-generate getters, setters, and a constructor with all fields.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Getter\n@Setter\n@AllArgsConstructor\npublic class Product {\n    private String name;\n    private double price;\n}"
+    },
+    "explanation": "Lombok annotations generate the getter/setter/constructor boilerplate at compile time via annotation processing, so the source file stays short while the compiled class still has the full set of methods a hand-written version would have.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 18
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-019",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Profiles",
+    "title": "Load different config per environment",
+    "prompt": "Write the file naming convention for a Spring Boot properties file that should only apply when the `dev` profile is active, and the command-line flag to activate that profile.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "File: application-dev.properties (or application-dev.yml)\nActivation: --spring.profiles.active=dev"
+    },
+    "explanation": "Spring Boot automatically loads `application-<profile>.properties` in addition to the base `application.properties` when that profile is active, letting environment-specific overrides (dev/staging/prod) live in separate files instead of one giant conditional config.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 19
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-020",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Logging",
+    "title": "Add a logger to a service class",
+    "prompt": "Write a `ProductService` class with a logger that logs an info message \"Fetching all products\" at the start of a `findAll()` method.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Service\npublic class ProductService {\n    private static final Logger log = LoggerFactory.getLogger(ProductService.class);\n\n    public List<Product> findAll() {\n        log.info(\"Fetching all products\");\n        return List.of();\n    }\n}"
+    },
+    "explanation": "`LoggerFactory.getLogger(ProductService.class)` (SLF4J, which Spring Boot wires to Logback by default) is the standard way to get a class-scoped logger; using `log.info()` instead of `System.out.println()` respects configured log levels and output destinations in production.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 20
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-EASY-021",
+    "type": "CODING",
+    "difficulty": "EASY",
+    "topic": "Actuator basics",
+    "title": "Expose a health check endpoint",
+    "prompt": "Write the `application.properties` entries needed to expose Spring Boot Actuator's `/actuator/health` endpoint.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "management.endpoints.web.exposure.include=health\nmanagement.endpoint.health.show-details=always"
+    },
+    "explanation": "Actuator endpoints are not all exposed by default for security reasons; `management.endpoints.web.exposure.include` explicitly whitelists which ones are reachable over HTTP, and `show-details=always` includes component-level health breakdowns (DB, disk space, etc.) rather than just a top-level UP/DOWN status.",
+    "expectedTimeSeconds": 90,
+    "defaultMarks": 1,
+    "negativeMarks": 0,
+    "shuffleGroup": "BEGINNER_POOL",
+    "sortOrder": 21
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-022",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "DTO mapping",
+    "title": "Map an entity to a DTO manually",
+    "prompt": "Given a `Product` JPA entity and a `ProductDto` (id, name, price only, no internal fields), write a method that converts one to the other.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public ProductDto toDto(Product entity) {\n    return new ProductDto(entity.getId(), entity.getName(), entity.getPrice());\n}"
+    },
+    "explanation": "Mapping entities to DTOs before returning them from a controller prevents internal persistence details (lazy-loaded associations, audit fields, JPA proxies) from leaking into the public API contract and being accidentally serialized.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 22
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-023",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Pagination",
+    "title": "Paginated list endpoint",
+    "prompt": "Write a GET `/api/products` endpoint that returns a paginated list of products, accepting `page` and `size` query parameters via Spring's Pageable support.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@GetMapping(\"/api/products\")\npublic Page<Product> getProducts(Pageable pageable) {\n    return repository.findAll(pageable);\n}"
+    },
+    "explanation": "Spring Web MVC automatically resolves a `Pageable` method parameter from `page`/`size`/`sort` query parameters without any manual parsing, and `JpaRepository.findAll(Pageable)` translates it directly into a `LIMIT`/`OFFSET` SQL query \u2014 critical for any endpoint that could otherwise return an unbounded result set.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 23
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-024",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Environment-specific beans",
+    "title": "Conditionally register a bean",
+    "prompt": "Write a configuration class that registers a `FakePaymentGateway` bean only when the `dev` profile is active, and a `RealPaymentGateway` bean otherwise.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Configuration\npublic class PaymentConfig {\n\n    @Bean\n    @Profile(\"dev\")\n    public PaymentGateway fakePaymentGateway() {\n        return new FakePaymentGateway();\n    }\n\n    @Bean\n    @Profile(\"!dev\")\n    public PaymentGateway realPaymentGateway() {\n        return new RealPaymentGateway();\n    }\n}"
+    },
+    "explanation": "`@Profile` on a `@Bean` method restricts when Spring registers that bean; `@Profile(\"!dev\")` means \"any profile except dev\", ensuring exactly one `PaymentGateway` bean exists regardless of which profile is active, avoiding an ambiguous-bean startup error.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 24
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-025",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Interceptors",
+    "title": "Log every request's duration",
+    "prompt": "Write a Spring `HandlerInterceptor` that logs how long each HTTP request took to process.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public class TimingInterceptor implements HandlerInterceptor {\n\n    @Override\n    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {\n        request.setAttribute(\"startTime\", System.currentTimeMillis());\n        return true;\n    }\n\n    @Override\n    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {\n        long start = (Long) request.getAttribute(\"startTime\");\n        long duration = System.currentTimeMillis() - start;\n        System.out.println(request.getRequestURI() + \" took \" + duration + \"ms\");\n    }\n}"
+    },
+    "explanation": "`preHandle` runs before the controller method and `afterCompletion` runs after the response is fully sent (including after any exception), so storing the start time as a request attribute and diffing it in `afterCompletion` correctly measures the full request lifecycle regardless of whether the request succeeded or failed.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 25
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-026",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Scheduled tasks",
+    "title": "Run a background job on a fixed schedule",
+    "prompt": "Write a Spring Boot scheduled method that runs every 30 minutes to clean up expired sessions.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Component\npublic class SessionCleanupJob {\n\n    @Scheduled(fixedRate = 30 * 60 * 1000)\n    public void cleanupExpiredSessions() {\n        // ... deletion logic ...\n    }\n}"
+    },
+    "explanation": "`@Scheduled(fixedRate = ...)` (milliseconds) runs the method repeatedly at that interval, measured from the start of one execution to the start of the next; `@EnableScheduling` must also be added to a `@Configuration` class for `@Scheduled` methods to actually run.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 26
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-MEDIUM-027",
+    "type": "CODING",
+    "difficulty": "MEDIUM",
+    "topic": "Custom health indicator",
+    "title": "Add a custom Actuator health check",
+    "prompt": "Write a custom Actuator HealthIndicator that reports DOWN if a critical external payment API is unreachable.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Component\npublic class PaymentApiHealthIndicator implements HealthIndicator {\n\n    private final PaymentApiClient client;\n\n    public PaymentApiHealthIndicator(PaymentApiClient client) {\n        this.client = client;\n    }\n\n    @Override\n    public Health health() {\n        try {\n            client.ping();\n            return Health.up().build();\n        } catch (Exception e) {\n            return Health.down().withDetail(\"error\", e.getMessage()).build();\n        }\n    }\n}"
+    },
+    "explanation": "Implementing `HealthIndicator` and registering it as a `@Component` automatically adds it as a named section under `/actuator/health`, so infrastructure monitoring (load balancers, Kubernetes liveness probes) can see this specific dependency's status alongside the built-in DB/disk checks.",
+    "expectedTimeSeconds": 180,
+    "defaultMarks": 2,
+    "negativeMarks": 0,
+    "shuffleGroup": "STANDARD",
+    "sortOrder": 27
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-HARD-028",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Custom Spring Data query with @Query",
+    "title": "Complex query with JPQL and joins",
+    "prompt": "Write a Spring Data JPA repository method using `@Query` that returns products whose category name matches a given string, joining through a `Category` entity.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "public interface ProductRepository extends JpaRepository<Product, Long> {\n\n    @Query(\"SELECT p FROM Product p JOIN p.category c WHERE c.name = :categoryName\")\n    List<Product> findByCategoryName(@Param(\"categoryName\") String categoryName);\n}"
+    },
+    "explanation": "`@Query` with JPQL is needed once the query requires a join through an entity relationship that a simple derived method name (`findByCategory_Name`, which would actually also work here) becomes awkward to express, or when the query needs custom joins, subqueries, or projections beyond what method-name derivation supports.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 28
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-HARD-029",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "AOP",
+    "title": "Cross-cutting logging with an aspect",
+    "prompt": "Write a Spring AOP aspect that logs the execution time of every method in any class annotated `@Service`, without modifying those classes directly.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@Aspect\n@Component\npublic class ServiceTimingAspect {\n\n    @Around(\"within(@org.springframework.stereotype.Service *)\")\n    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {\n        long start = System.currentTimeMillis();\n        Object result = joinPoint.proceed();\n        long duration = System.currentTimeMillis() - start;\n        System.out.println(joinPoint.getSignature() + \" took \" + duration + \"ms\");\n        return result;\n    }\n}"
+    },
+    "explanation": "`@Around` advice with the pointcut `within(@Service *)` matches every method call on any class carrying the `@Service` annotation, and `joinPoint.proceed()` actually invokes the original method \u2014 this is how cross-cutting concerns like timing, logging, or auditing get applied uniformly without touching each service class's own code.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 29
+  },
+  {
+    "subjectSlug": "spring-boot",
+    "subjectName": "Spring Boot",
+    "code": "SPRINGBOOT-COD-HARD-030",
+    "type": "CODING",
+    "difficulty": "HARD",
+    "topic": "Idempotent API design",
+    "title": "Make a POST endpoint safe to retry",
+    "prompt": "Write a POST `/api/orders` endpoint that accepts an `Idempotency-Key` header and ensures that retrying the same request (same key) never creates a duplicate order.",
+    "options": [],
+    "correctAnswer": {
+      "solution": "@PostMapping(\"/api/orders\")\npublic ResponseEntity<Order> createOrder(\n        @RequestHeader(\"Idempotency-Key\") String idempotencyKey,\n        @RequestBody CreateOrderRequest request) {\n\n    Optional<Order> existing = orderRepository.findByIdempotencyKey(idempotencyKey);\n    if (existing.isPresent()) {\n        return ResponseEntity.ok(existing.get());\n    }\n\n    Order order = orderService.create(request, idempotencyKey);\n    return ResponseEntity.status(HttpStatus.CREATED).body(order);\n}"
+    },
+    "explanation": "Storing the client-supplied `Idempotency-Key` on the created order (with a unique DB constraint on that column as the real safety net against race conditions) lets a retried request with the same key return the original result instead of creating a second order \u2014 essential for any payment or order-creation endpoint where a network timeout might cause a client to retry a request that actually already succeeded server-side.",
+    "expectedTimeSeconds": 300,
+    "defaultMarks": 3,
+    "negativeMarks": 0,
+    "shuffleGroup": "ADVANCED_POOL",
+    "sortOrder": 30
+  }
+]

@@ -1,0 +1,22 @@
+.DS_Store
+Thumbs.db
+
+# Java / Maven
+backend/target/
+*.class
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/dev-server*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/

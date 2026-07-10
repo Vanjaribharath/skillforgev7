@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: executionos-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter
+    region: oregon
+    healthCheckPath: /actuator/health
+    numInstances: 1
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DATABASE_URL
+        sync: false          # set manually: paste your Neon connection string
+      - key: JWT_SECRET
+        generateValue: true  # Render generates a random secret automatically
+      - key: CORS_ORIGINS
+        sync: false          # set manually: your Vercel/Netlify frontend URL(s)
+      - key: DB_POOL_SIZE
+        value: "5"            # Neon free tier has a low connection ceiling
