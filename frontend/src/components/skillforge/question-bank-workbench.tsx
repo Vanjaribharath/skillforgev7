@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CheckCircle2, FileSpreadsheet, Filter, GitBranch, Plus, RefreshCcw, Search, Send, Shuffle } from "lucide-react";
+import { CheckCircle2, FileSpreadsheet, Filter, GitBranch, Loader2, Plus, RefreshCcw, Search, Send, Shuffle, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,57 @@ type ImportReport = {
 
 const fallbackSubjects = ["Java", "Spring Boot", "Linux", "SQL", "Kafka", "Docker"];
 
+const QUESTION_TYPES: { value: string; label: string; hasOptions: boolean }[] = [
+  { value: "MULTIPLE_CHOICE", label: "Multiple choice (one correct answer)", hasOptions: true },
+  { value: "MULTIPLE_SELECT", label: "Multiple select (several correct answers)", hasOptions: true },
+  { value: "TRUE_FALSE", label: "True / False", hasOptions: true },
+  { value: "FILL_BLANK", label: "Fill in the blank", hasOptions: false },
+  { value: "CODE_OUTPUT", label: "Predict the code output", hasOptions: false },
+  { value: "CODE_COMPLETION", label: "Code completion", hasOptions: false },
+  { value: "CODING", label: "Coding exercise", hasOptions: false },
+  { value: "SCENARIO", label: "Scenario / free response", hasOptions: false },
+  { value: "ORDERING", label: "Ordering", hasOptions: false },
+  { value: "DRAG_DROP", label: "Drag and drop", hasOptions: false },
+];
+
+/** Wraps a CSV cell in quotes and doubles any internal quotes, only when needed. */
+function csvCell(value: string): string {
+  if (value.includes(",") || value.includes("\"") || value.includes("\n")) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
+type NewQuestionForm = {
+  subject: string;
+  type: string;
+  difficulty: Difficulty;
+  prompt: string;
+  options: string[];
+  correctAnswers: string[];
+  freeTextAnswer: string;
+  expectedTimeSeconds: string;
+  marks: string;
+  topic: string;
+  explanation: string;
+};
+
+function blankQuestionForm(defaultSubject: string): NewQuestionForm {
+  return {
+    subject: defaultSubject,
+    type: "MULTIPLE_CHOICE",
+    difficulty: "EASY",
+    prompt: "",
+    options: ["", ""],
+    correctAnswers: [],
+    freeTextAnswer: "",
+    expectedTimeSeconds: "60",
+    marks: "1",
+    topic: "",
+    explanation: "",
+  };
+}
+
 export function QuestionBankWorkbench() {
   const organizationId = useOrganizationStore((s) => s.organizationId);
   const currentUserId = useAuthStore((s) => s.user?.id);
@@ -58,6 +109,14 @@ export function QuestionBankWorkbench() {
   const [loading, setLoading] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importReport, setImportReport] = useState<ImportReport | null>(null);
+  const [showNewQuestionModal, setShowNewQuestionModal] = useState(false);
+  const [newQuestion, setNewQuestion] = useState<NewQuestionForm>(() => blankQuestionForm("Java"));
+  const [submittingQuestion, setSubmittingQuestion] = useState(false);
+  const [newQuestionError, setNewQuestionError] = useState<string | null>(null);
+  // Shown right next to "Randomize" / "Use in assessment" -- the old code only
+  // ever wrote to `message`, which renders far away in the left-hand card, so
+  // clicking these buttons looked like nothing had happened.
+  const [poolMessage, setPoolMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!organizationId) return;
@@ -142,15 +201,141 @@ export function QuestionBankWorkbench() {
   function randomizePool() {
     const shuffled = [...questions].sort(() => Math.random() - 0.5).slice(0, 20);
     setSelected(Object.fromEntries(shuffled.map((question) => [question.id, question])));
-    setMessage(`Randomized ${shuffled.length} ${subject} questions for trainer review.`);
+    const text = `Randomized ${shuffled.length} ${subject} questions for trainer review.`;
+    setMessage(text);
+    setPoolMessage(text);
   }
 
   function publishPool() {
     if (selectedQuestions.length === 0) {
-      setMessage("Select questions before publishing an assessment pool.");
+      const text = "Select questions before publishing an assessment pool.";
+      setMessage(text);
+      setPoolMessage(text);
       return;
     }
-    setMessage(`Selected ${selectedQuestions.length} questions. Attach this pool from the Assessment Builder's "Use in Assessment" step to publish it to candidates.`);
+    const text = `Selected ${selectedQuestions.length} questions. Head to Assessments → your assessment → "Add questions" to attach this pool and publish it to candidates.`;
+    setMessage(text);
+    setPoolMessage(text);
+  }
+
+  function updateNewQuestionField<K extends keyof NewQuestionForm>(field: K, value: NewQuestionForm[K]) {
+    setNewQuestion((current) => ({ ...current, [field]: value }));
+  }
+
+  function updateOption(index: number, value: string) {
+    setNewQuestion((current) => {
+      const options = [...current.options];
+      options[index] = value;
+      return { ...current, options };
+    });
+  }
+
+  function addOption() {
+    setNewQuestion((current) => ({ ...current, options: [...current.options, ""] }));
+  }
+
+  function removeOption(index: number) {
+    setNewQuestion((current) => ({
+      ...current,
+      options: current.options.filter((_, i) => i !== index),
+      correctAnswers: current.correctAnswers.filter((answer) => answer !== current.options[index]),
+    }));
+  }
+
+  function toggleCorrectAnswer(option: string) {
+    setNewQuestion((current) => {
+      const isMulti = current.type === "MULTIPLE_SELECT";
+      if (isMulti) {
+        const exists = current.correctAnswers.includes(option);
+        return { ...current, correctAnswers: exists ? current.correctAnswers.filter((a) => a !== option) : [...current.correctAnswers, option] };
+      }
+      return { ...current, correctAnswers: [option] };
+    });
+  }
+
+  function openNewQuestionModal() {
+    setNewQuestion(blankQuestionForm(subject));
+    setNewQuestionError(null);
+    setShowNewQuestionModal(true);
+  }
+
+  /**
+   * There is no single-question "create" screen in the API that a form can
+   * safely target end-to-end (POST /questions alone leaves the question in
+   * DRAFT status, invisible in this catalog until a separate submit-review +
+   * approve step runs). The CSV import endpoint already does all of that in
+   * one trusted, tested step -- APPROVED immediately, correct-answer
+   * validated, subject resolved -- for any ADMIN/TRAINER/EVALUATOR account.
+   * So this form builds a valid one-row CSV in memory and reuses that same
+   * endpoint, rather than duplicating (and re-testing) that logic.
+   */
+  async function submitNewQuestion() {
+    if (!organizationId || !currentUserId) {
+      setNewQuestionError("Sign in again — missing organization or user context.");
+      return;
+    }
+    const typeMeta = QUESTION_TYPES.find((t) => t.value === newQuestion.type)!;
+    const prompt = newQuestion.prompt.trim();
+    if (!prompt) {
+      setNewQuestionError("Prompt is required.");
+      return;
+    }
+    if (!subjects.map((s) => s.toLowerCase()).includes(newQuestion.subject.trim().toLowerCase())) {
+      setNewQuestionError(`"${newQuestion.subject}" isn't an existing subject. Pick one from the dropdown — new subjects can't be created from this form yet.`);
+      return;
+    }
+    const cleanOptions = newQuestion.options.map((o) => o.trim()).filter(Boolean);
+    if (typeMeta.hasOptions && cleanOptions.length < 2) {
+      setNewQuestionError("Add at least two options for this question type.");
+      return;
+    }
+    let correctAnswerCell = "";
+    if (typeMeta.hasOptions) {
+      if (newQuestion.correctAnswers.length === 0) {
+        setNewQuestionError("Select the correct answer (or answers).");
+        return;
+      }
+      correctAnswerCell = newQuestion.correctAnswers.join("|");
+    } else {
+      correctAnswerCell = newQuestion.freeTextAnswer.trim();
+    }
+
+    const header = "subject,prompt,type,difficulty,options,correct_answer,expected_time_seconds,marks,topic,explanation";
+    const row = [
+      newQuestion.subject.trim(),
+      prompt,
+      newQuestion.type,
+      newQuestion.difficulty,
+      typeMeta.hasOptions ? cleanOptions.join("|") : "",
+      correctAnswerCell,
+      newQuestion.expectedTimeSeconds.trim() || "60",
+      newQuestion.marks.trim() || "1",
+      newQuestion.topic.trim(),
+      newQuestion.explanation.trim(),
+    ].map(csvCell).join(",");
+    const csv = `${header}\n${row}`;
+
+    setSubmittingQuestion(true);
+    setNewQuestionError(null);
+    try {
+      const response = await api.post<ImportReport>("/questions/import/csv", csv, {
+        params: { organizationId, createdBy: currentUserId },
+        headers: { "Content-Type": "text/plain" },
+      });
+      if (response.data.importedSuccessfully >= 1) {
+        setMessage(`Question added to the ${newQuestion.subject} bank and approved — it's visible below immediately.`);
+        setShowNewQuestionModal(false);
+        await loadCoverage();
+        await loadQuestions(newQuestion.subject, newQuestion.difficulty);
+      } else {
+        const reason = response.data.warnings[0] || "The question wasn't accepted — check the correct answer matches one of the options exactly.";
+        setNewQuestionError(reason);
+      }
+    } catch (error: any) {
+      setNewQuestionError(error?.response?.data?.error || error.message || "Couldn't save the question — check your connection and try again.");
+    } finally {
+      setSubmittingQuestion(false);
+    }
   }
 
   async function handleCsvFile(file: File) {
@@ -189,7 +374,7 @@ export function QuestionBankWorkbench() {
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">Browse approved questions by subject and difficulty, or import a CSV to grow the bank. Correct answers are never sent to this view — only trainers reviewing a specific question via the approval workflow can see them.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={() => setMessage("Single-question authoring form isn't built yet — use CSV Import below for now, even for one question at a time.")}><Plus size={18} /> New question</Button>
+          <Button onClick={openNewQuestionModal}><Plus size={18} /> New question</Button>
           <input ref={fileInputRef} type="file" accept=".csv,text/csv" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleCsvFile(f); }} />
           <Button variant="outline" disabled={importing} onClick={() => fileInputRef.current?.click()}>
             <FileSpreadsheet size={18} /> {importing ? "Importing…" : "Import CSV"}
@@ -336,8 +521,140 @@ export function QuestionBankWorkbench() {
             ))}
           </div>
           <Button className="mt-4 w-full" onClick={publishPool}><CheckCircle2 size={17} /> Use in assessment</Button>
+          {poolMessage && (
+            <p className="mt-2 rounded-md bg-[#EFF6FF] px-3 py-2 text-xs text-blue">{poolMessage}</p>
+          )}
         </Card>
       </div>
+
+      {showNewQuestionModal && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 pt-10 sm:pt-16" onClick={() => !submittingQuestion && setShowNewQuestionModal(false)}>
+          <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">New question</h2>
+              <button aria-label="Close" onClick={() => !submittingQuestion && setShowNewQuestionModal(false)} className="text-muted hover:text-ink"><X size={20} /></button>
+            </div>
+
+            {newQuestionError && (
+              <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{newQuestionError}</div>
+            )}
+
+            <div className="space-y-4">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <label className="text-sm">
+                  <span className="mb-1 block font-medium text-ink">Subject</span>
+                  <select className="h-10 w-full rounded-md border border-line bg-white px-3 text-sm" value={newQuestion.subject} onChange={(e) => updateNewQuestionField("subject", e.target.value)}>
+                    {subjects.map((s) => <option key={s}>{s}</option>)}
+                  </select>
+                </label>
+                <label className="text-sm">
+                  <span className="mb-1 block font-medium text-ink">Difficulty</span>
+                  <select className="h-10 w-full rounded-md border border-line bg-white px-3 text-sm" value={newQuestion.difficulty} onChange={(e) => updateNewQuestionField("difficulty", e.target.value as Difficulty)}>
+                    <option value="EASY">Easy</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HARD">Hard</option>
+                  </select>
+                </label>
+                <label className="text-sm">
+                  <span className="mb-1 block font-medium text-ink">Type</span>
+                  <select
+                    className="h-10 w-full rounded-md border border-line bg-white px-3 text-sm"
+                    value={newQuestion.type}
+                    onChange={(e) => {
+                      const type = e.target.value;
+                      const isTrueFalse = type === "TRUE_FALSE";
+                      setNewQuestion((current) => ({
+                        ...current,
+                        type,
+                        options: isTrueFalse ? ["True", "False"] : current.options,
+                        correctAnswers: [],
+                      }));
+                    }}
+                  >
+                    {QUESTION_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+                </label>
+              </div>
+
+              <label className="block text-sm">
+                <span className="mb-1 block font-medium text-ink">Prompt</span>
+                <textarea
+                  className="min-h-[80px] w-full rounded-md border border-line bg-white px-3 py-2 text-sm"
+                  placeholder="e.g. What does the final keyword do on a variable?"
+                  value={newQuestion.prompt}
+                  onChange={(e) => updateNewQuestionField("prompt", e.target.value)}
+                />
+              </label>
+
+              {QUESTION_TYPES.find((t) => t.value === newQuestion.type)?.hasOptions ? (
+                <div>
+                  <span className="mb-1 block text-sm font-medium text-ink">Options — tick the correct one{newQuestion.type === "MULTIPLE_SELECT" ? "(s)" : ""}</span>
+                  <div className="space-y-2">
+                    {newQuestion.options.map((option, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <input
+                          type={newQuestion.type === "MULTIPLE_SELECT" ? "checkbox" : "radio"}
+                          name="correct-answer"
+                          checked={option.trim().length > 0 && newQuestion.correctAnswers.includes(option.trim())}
+                          onChange={() => option.trim() && toggleCorrectAnswer(option.trim())}
+                        />
+                        <Input
+                          value={option}
+                          placeholder={`Option ${index + 1}`}
+                          disabled={newQuestion.type === "TRUE_FALSE"}
+                          onChange={(e) => updateOption(index, e.target.value)}
+                        />
+                        {newQuestion.type !== "TRUE_FALSE" && newQuestion.options.length > 2 && (
+                          <button aria-label="Remove option" onClick={() => removeOption(index)} className="text-muted hover:text-red-600"><X size={16} /></button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {newQuestion.type !== "TRUE_FALSE" && (
+                    <Button variant="outline" className="mt-2" onClick={addOption}><Plus size={14} /> Add option</Button>
+                  )}
+                </div>
+              ) : (
+                <label className="block text-sm">
+                  <span className="mb-1 block font-medium text-ink">Expected answer</span>
+                  <Input value={newQuestion.freeTextAnswer} onChange={(e) => updateNewQuestionField("freeTextAnswer", e.target.value)} placeholder="Model answer used for manual/trainer evaluation" />
+                </label>
+              )}
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <label className="text-sm">
+                  <span className="mb-1 block font-medium text-ink">Time (seconds)</span>
+                  <Input value={newQuestion.expectedTimeSeconds} onChange={(e) => updateNewQuestionField("expectedTimeSeconds", e.target.value)} />
+                </label>
+                <label className="text-sm">
+                  <span className="mb-1 block font-medium text-ink">Marks</span>
+                  <Input value={newQuestion.marks} onChange={(e) => updateNewQuestionField("marks", e.target.value)} />
+                </label>
+                <label className="text-sm">
+                  <span className="mb-1 block font-medium text-ink">Topic (optional)</span>
+                  <Input value={newQuestion.topic} onChange={(e) => updateNewQuestionField("topic", e.target.value)} />
+                </label>
+              </div>
+
+              <label className="block text-sm">
+                <span className="mb-1 block font-medium text-ink">Explanation (optional, shown to candidates after grading)</span>
+                <textarea
+                  className="min-h-[60px] w-full rounded-md border border-line bg-white px-3 py-2 text-sm"
+                  value={newQuestion.explanation}
+                  onChange={(e) => updateNewQuestionField("explanation", e.target.value)}
+                />
+              </label>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowNewQuestionModal(false)} disabled={submittingQuestion}>Cancel</Button>
+              <Button onClick={() => void submitNewQuestion()} disabled={submittingQuestion}>
+                {submittingQuestion ? <><Loader2 size={16} className="animate-spin" /> Saving…</> : <>Save question</>}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

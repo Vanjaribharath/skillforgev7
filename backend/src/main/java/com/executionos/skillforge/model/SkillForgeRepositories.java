@@ -32,6 +32,7 @@ interface SfUserRepository extends JpaRepository<SfUser, UUID> {
     @Query("SELECT u FROM SfUser u WHERE u.organizationId = :orgId AND u.role = 'CANDIDATE' "
             + "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :q, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :q, '%')))")
     List<SfUser> searchCandidates(@Param("orgId") UUID organizationId, @Param("q") String query);
+    List<SfUser> findTop10ByOrganizationIdOrderByCreatedAtDesc(UUID organizationId);
 }
 
 interface SfDepartmentRepository extends JpaRepository<SfDepartment, UUID> {
@@ -65,6 +66,7 @@ interface SfQuestionRepository extends JpaRepository<SfQuestion, UUID> {
 
     @Query("SELECT q.subjectId, q.difficulty, COUNT(q) FROM SfQuestion q WHERE q.organizationId = :organizationId AND q.status = 'APPROVED' GROUP BY q.subjectId, q.difficulty")
     List<Object[]> countBySubjectAndDifficulty(@Param("organizationId") UUID organizationId);
+    List<SfQuestion> findTop10ByOrganizationIdOrderByUpdatedAtDesc(UUID organizationId);
 }
 
 interface SfQuestionVersionRepository extends JpaRepository<SfQuestionVersion, UUID> {

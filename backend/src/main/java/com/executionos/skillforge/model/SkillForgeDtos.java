@@ -101,6 +101,7 @@ public final class SkillForgeDtos {
     public record TrainerCatalogQuestion(String id, String subject, String topic, QuestionType type, Difficulty difficulty, String prompt, String options, String correctAnswer, String explanation, int expectedTimeSeconds) {}
     public record SubjectCoverage(String subject, String slug, long totalQuestions, long easy, long medium, long hard) {}
     public record DemoBootstrapResponse(UUID organizationId, String organizationName, long generatedQuestionCoverage, String trainerEmail, String candidateEmail) {}
+    public record ActivityEvent(String action, String entityType, Instant createdAt) {}
 
     public record QuestionImportRow(String subject, String topic, QuestionType type, Difficulty difficulty, String prompt, String optionsJson, String correctAnswerJson, String explanation, Integer expectedTimeSeconds, BigDecimal marks) {}
     public record QuestionImportReport(int totalRecords, int importedSuccessfully, int duplicates, int invalidQuestions, int failedRows, List<String> warnings) {}

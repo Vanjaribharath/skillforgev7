@@ -8,7 +8,7 @@ describe("api-client 401 refresh flow", () => {
   let rawAxiosMock: MockAdapter;
 
   beforeEach(() => {
-    window.localStorage.clear();
+    window.sessionStorage.clear();
     apiMock = new MockAdapter(api);
     // refreshAccessToken() deliberately calls the raw `axios` module (not
     // the `api` instance) so the refresh call itself never re-enters this
@@ -26,8 +26,8 @@ describe("api-client 401 refresh flow", () => {
   });
 
   it("silently refreshes and retries the original request once on a 401", async () => {
-    window.localStorage.setItem("executionos.accessToken", "expired-token");
-    window.localStorage.setItem("executionos.refreshToken", "valid-refresh-token");
+    window.sessionStorage.setItem("executionos.accessToken", "expired-token");
+    window.sessionStorage.setItem("executionos.refreshToken", "valid-refresh-token");
 
     let firstAttempt = true;
     apiMock.onGet("/candidates").reply((config) => {
@@ -49,26 +49,26 @@ describe("api-client 401 refresh flow", () => {
     const res = await api.get("/candidates");
 
     expect(res.data).toEqual([{ id: "1", fullName: "Aarav Sharma" }]);
-    expect(window.localStorage.getItem("executionos.accessToken")).toBe("new-access-token");
-    expect(window.localStorage.getItem("executionos.refreshToken")).toBe("new-refresh-token");
+    expect(window.sessionStorage.getItem("executionos.accessToken")).toBe("new-access-token");
+    expect(window.sessionStorage.getItem("executionos.refreshToken")).toBe("new-refresh-token");
   });
 
   it("clears the session and stops retrying if the refresh token is also invalid", async () => {
-    window.localStorage.setItem("executionos.accessToken", "expired-token");
-    window.localStorage.setItem("executionos.refreshToken", "also-expired-refresh-token");
+    window.sessionStorage.setItem("executionos.accessToken", "expired-token");
+    window.sessionStorage.setItem("executionos.refreshToken", "also-expired-refresh-token");
 
     apiMock.onGet("/candidates").reply(401, { error: "Token expired" });
     rawAxiosMock.onPost(/\/auth\/refresh$/).reply(401, { error: "Invalid refresh token" });
 
     await expect(api.get("/candidates")).rejects.toBeTruthy();
 
-    expect(window.localStorage.getItem("executionos.accessToken")).toBeNull();
-    expect(window.localStorage.getItem("executionos.refreshToken")).toBeNull();
-    expect(window.localStorage.getItem("executionos.user")).toBeNull();
+    expect(window.sessionStorage.getItem("executionos.accessToken")).toBeNull();
+    expect(window.sessionStorage.getItem("executionos.refreshToken")).toBeNull();
+    expect(window.sessionStorage.getItem("executionos.user")).toBeNull();
   });
 
   it("does not attempt a refresh loop when there is no refresh token at all", async () => {
-    window.localStorage.setItem("executionos.accessToken", "expired-token");
+    window.sessionStorage.setItem("executionos.accessToken", "expired-token");
     // No refresh token stored.
 
     let callCount = 0;

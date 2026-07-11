@@ -19,6 +19,7 @@ describe("LoginPage", () => {
     postMock.mockReset();
     replaceMock.mockReset();
     window.localStorage.clear();
+    window.sessionStorage.clear();
   });
 
   it("surfaces the backend's real error message instead of a generic one when the API returns a proper error body", async () => {

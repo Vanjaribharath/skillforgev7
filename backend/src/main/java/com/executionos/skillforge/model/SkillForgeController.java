@@ -236,6 +236,11 @@ public class SkillForgeController {
         return service.candidateReport(organizationId, candidateUserId);
     }
 
+    @GetMapping("/reports/activity")
+    public List<ActivityEvent> recentActivity(@RequestParam UUID organizationId) {
+        return service.recentActivity(organizationId);
+    }
+
     @GetMapping("/health-dashboard")
     public HealthDashboardResponse healthDashboard(@RequestParam UUID organizationId) {
         return service.healthDashboard(organizationId);

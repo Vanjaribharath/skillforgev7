@@ -3,22 +3,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArchiveRestore, Shield } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { executionApi } from "@/lib/execution-api-client";
+import { api } from "@/lib/api-client";
+import { useOrganizationStore } from "@/store/use-organization-store";
 
-type ActivityLog = { id: string; action: string; entityType: string; createdAt: string };
+type ActivityLog = { action: string; entityType: string; createdAt: string };
 
 export default function AdminPage() {
+  const organizationId = useOrganizationStore((s) => s.organizationId);
   // The health/queue/APM stat cards this page used to show were hardcoded
   // numbers with no backend behind them at all (no queue system, no
   // latency tracking exists in this app) -- removed rather than replaced
-  // with a different set of fake numbers. Only "Recent audit events" below
-  // is wired to something real (ActivityLogRepository).
+  // with a different set of fake numbers. "Recent audit events" below is
+  // wired to a real endpoint (/reports/activity) built from actual user and
+  // question records.
   const { data: logs = [], isLoading, isError } = useQuery<ActivityLog[]>({
-    queryKey: ["admin-logs"],
+    queryKey: ["skillforge-activity", organizationId],
+    enabled: Boolean(organizationId),
     queryFn: async () => {
-      const res = await executionApi.get("/admin/logs", { params: { size: 20 } });
-      const raw = res.data;
-      return Array.isArray(raw) ? raw : Array.isArray(raw?.content) ? raw.content : [];
+      const res = await api.get("/reports/activity", { params: { organizationId } });
+      return Array.isArray(res.data) ? res.data : [];
     },
   });
 
@@ -39,8 +42,8 @@ export default function AdminPage() {
         {isError && <p className="text-sm text-red-600">Couldn't load audit events.</p>}
         {!isLoading && !isError && logs.length === 0 && <p className="text-sm text-muted">No activity recorded yet.</p>}
         <div className="space-y-2 text-sm">
-          {logs.map((log) => (
-            <div key={log.id} className="rounded-md border border-line px-3 py-2">
+          {logs.map((log, index) => (
+            <div key={`${log.createdAt}-${index}`} className="rounded-md border border-line px-3 py-2">
               <span className="font-medium">{log.action}</span>
               <span className="text-muted"> · {log.entityType} · {new Date(log.createdAt).toLocaleString()}</span>
             </div>

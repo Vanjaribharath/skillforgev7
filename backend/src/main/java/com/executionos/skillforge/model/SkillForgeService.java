@@ -800,6 +800,28 @@ public class SkillForgeService {
     }
 
     /**
+     * A genuine (if modest) activity feed built from data this app already
+     * has -- recently created users and recently touched questions -- rather
+     * than the placeholder queue/latency/backup stat cards this page used to
+     * show, which had no backing system behind them at all.
+     */
+    @Transactional(readOnly = true)
+    public List<ActivityEvent> recentActivity(UUID organizationId) {
+        requireOrganization(organizationId);
+        List<ActivityEvent> events = new java.util.ArrayList<>();
+        for (SfUser user : users.findTop10ByOrganizationIdOrderByCreatedAtDesc(organizationId)) {
+            events.add(new ActivityEvent(user.getRole() + " added: " + user.getFullName(), "user", user.getCreatedAt()));
+        }
+        for (SfQuestion question : questions.findTop10ByOrganizationIdOrderByUpdatedAtDesc(organizationId)) {
+            events.add(new ActivityEvent("Question " + question.getStatus().toString().toLowerCase() + ": " + question.getCode(), "question", question.getUpdatedAt()));
+        }
+        return events.stream()
+                .sorted((a, b) -> b.createdAt().compareTo(a.createdAt()))
+                .limit(20)
+                .toList();
+    }
+
+    /**
      * CSV columns (header row required):
      *   subject,topic,type,difficulty,prompt,options,correct_answer,explanation,expected_time_seconds,marks
      *

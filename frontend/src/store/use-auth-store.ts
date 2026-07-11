@@ -30,17 +30,17 @@ export const useAuthStore = create<AuthState>((set) => ({
   hydrated: false,
   setSession: (user, accessToken, refreshToken) => {
     if (typeof window !== "undefined") {
-      window.localStorage.setItem(TOKEN_KEY, accessToken);
-      window.localStorage.setItem(USER_KEY, JSON.stringify(user));
-      if (refreshToken) window.localStorage.setItem(REFRESH_KEY, refreshToken);
+      window.sessionStorage.setItem(TOKEN_KEY, accessToken);
+      window.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+      if (refreshToken) window.sessionStorage.setItem(REFRESH_KEY, refreshToken);
     }
     set({ user, accessToken, refreshToken: refreshToken ?? null, hydrated: true });
   },
   logout: () => {
     if (typeof window !== "undefined") {
-      window.localStorage.removeItem(TOKEN_KEY);
-      window.localStorage.removeItem(REFRESH_KEY);
-      window.localStorage.removeItem(USER_KEY);
+      window.sessionStorage.removeItem(TOKEN_KEY);
+      window.sessionStorage.removeItem(REFRESH_KEY);
+      window.sessionStorage.removeItem(USER_KEY);
     }
     set({ user: null, accessToken: null, refreshToken: null, hydrated: true });
   },
@@ -53,15 +53,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ hydrated: true });
       return;
     }
-    const token = window.localStorage.getItem(TOKEN_KEY);
-    const refreshToken = window.localStorage.getItem(REFRESH_KEY);
-    const rawUser = window.localStorage.getItem(USER_KEY);
+    const token = window.sessionStorage.getItem(TOKEN_KEY);
+    const refreshToken = window.sessionStorage.getItem(REFRESH_KEY);
+    const rawUser = window.sessionStorage.getItem(USER_KEY);
     let user: SkillForgeUser | null = null;
     if (rawUser) {
       try {
         user = JSON.parse(rawUser) as SkillForgeUser;
       } catch {
-        window.localStorage.removeItem(USER_KEY);
+        window.sessionStorage.removeItem(USER_KEY);
       }
     }
     set({ user, accessToken: token, refreshToken, hydrated: true });
