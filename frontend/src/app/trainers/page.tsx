@@ -20,7 +20,8 @@ export default function TrainersPage() {
   const { data: trainers = [] } = useQuery({
     queryKey: ["trainers", organizationId],
     queryFn: async () => {
-      const res = await api.get(`/trainers`, { params: { organizationId } });
+      // See candidates/page.tsx -- same default-20-page-size issue.
+      const res = await api.get(`/trainers`, { params: { organizationId, size: 1000, sort: "createdAt,desc" } });
       return res.data?.content || [];
     },
     enabled: !!organizationId,

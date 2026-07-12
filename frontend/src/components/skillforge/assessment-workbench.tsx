@@ -42,7 +42,12 @@ export function AssessmentWorkbench() {
   const { data: candidates = [] } = useQuery({
     queryKey: ["candidates", organizationId],
     queryFn: async () => {
-      const res = await api.get(`/candidates`, { params: { organizationId } });
+      // This list drives "Send invitations" recipient selection. It was
+      // silently capped at Spring's default page size of 20 -- with 24
+      // candidates in the organization, the 4 candidates past that cutoff
+      // were never even offered as invite recipients, with no error or
+      // indication anything was missing.
+      const res = await api.get(`/candidates`, { params: { organizationId, size: 1000, sort: "createdAt,desc" } });
       return res.data?.content || [];
     },
     enabled: !!organizationId,
@@ -51,7 +56,7 @@ export function AssessmentWorkbench() {
   const { data: assessments = [] } = useQuery({
     queryKey: ["assessments", organizationId],
     queryFn: async () => {
-      const res = await api.get(`/assessments`, { params: { organizationId } });
+      const res = await api.get(`/assessments`, { params: { organizationId, size: 1000 } });
       return res.data?.content || [];
     },
     enabled: !!organizationId,

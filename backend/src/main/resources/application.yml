@@ -29,6 +29,19 @@ spring:
     connect-retries: 10
   lifecycle:
     timeout-per-shutdown-phase: 20s
+  data:
+    web:
+      pageable:
+        # Spring Data's own default is 20 -- several list endpoints
+        # (candidates, trainers, assessments) never passed an explicit size
+        # from the frontend, so results silently capped at 20 with no
+        # indication anything was cut off. This raises the default and caps
+        # the maximum any caller can request; the frontend additionally now
+        # asks for a generous size explicitly (see candidates/page.tsx etc.)
+        # so the list views themselves don't depend on this default either.
+        default-page-size: 200
+        max-page-size: 2000
+        one-indexed-parameters: false
 server:
   port: ${PORT:8080}
   shutdown: graceful

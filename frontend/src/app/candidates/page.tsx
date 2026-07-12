@@ -18,14 +18,22 @@ export default function CandidatesPage() {
   const [newCandidate, setNewCandidate] = useState({ fullName: "", email: "" });
   const [message, setMessage] = useState("");
 
-  const { data: candidates = [] } = useQuery({
+  const { data: candidatePage } = useQuery({
     queryKey: ["candidates", organizationId],
     queryFn: async () => {
-      const res = await api.get(`/candidates`, { params: { organizationId } });
-      return res.data?.content || [];
+      // Spring Data's list endpoints default to a page size of 20 when no
+      // `size` is passed. This app's candidate lists are small enough (tens
+      // to low hundreds per organization) that fetching a single generous
+      // page is simpler and safer than building a paginated table -- but we
+      // still surface totalElements so a genuinely large org sees an
+      // honest count instead of a silently truncated list.
+      const res = await api.get(`/candidates`, { params: { organizationId, size: 1000, sort: "createdAt,desc" } });
+      return res.data as { content: any[]; totalElements: number };
     },
     enabled: !!organizationId,
   });
+  const candidates = candidatePage?.content || [];
+  const totalCandidates = candidatePage?.totalElements ?? candidates.length;
 
   const addCandidateMutation = useMutation({
     mutationFn: async (candidate: { fullName: string; email: string }) => {
@@ -116,7 +124,13 @@ export default function CandidatesPage() {
 
       <Card>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Candidate history</h2>
+          <div>
+            <h2 className="text-lg font-semibold">Candidate history</h2>
+            <p className="text-xs text-muted">
+              Showing {candidates.length} of {totalCandidates} candidate{totalCandidates === 1 ? "" : "s"}
+              {candidates.length < totalCandidates ? " — more exist than are shown below; contact support to raise the page size." : ""}
+            </p>
+          </div>
           <UsersRound className="text-blue" size={20} />
         </div>
         <div className="grid gap-3">
