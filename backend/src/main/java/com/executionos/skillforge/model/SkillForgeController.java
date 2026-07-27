@@ -187,6 +187,13 @@ public class SkillForgeController {
         return service.inviteCandidates(id, request);
     }
 
+    public record TestEmailRequest(@jakarta.validation.constraints.Email @jakarta.validation.constraints.NotBlank String email) {}
+
+    @PostMapping("/notifications/test-email")
+    public TestEmailResponse testEmail(@Valid @RequestBody TestEmailRequest request) {
+        return service.sendTestEmail(request.email());
+    }
+
     @GetMapping("/assessments/{id}/live")
     public LiveDashboardResponse liveDashboard(@PathVariable UUID id) {
         return service.liveDashboard(id);

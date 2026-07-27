@@ -68,6 +68,45 @@ describe("AssessmentWorkbench publish flow", () => {
     await waitFor(() => expect(screen.getByText(/real approved/i)).toBeInTheDocument());
   });
 
+  it("shows the backend's real send summary, not a count derived from candidates selected", async () => {
+    getMock.mockImplementation((url: string) => {
+      if (url === "/candidates") {
+        return Promise.resolve({ data: { content: [{ id: "cand-1" }, { id: "cand-2" }] } });
+      }
+      if (url === "/catalog/questions") {
+        return Promise.resolve({ data: [{ id: "q1" }, { id: "q2" }] });
+      }
+      return Promise.resolve({ data: { content: [] } });
+    });
+    postMock.mockImplementation((url: string) => {
+      if (url === "/assessments") return Promise.resolve({ data: { id: "assessment-1" } });
+      if (url === "/assessments/assessment-1/sections") return Promise.resolve({ data: { id: "section-1" } });
+      if (url === "/assessments/assessment-1/questions") return Promise.resolve({ data: {} });
+      if (url === "/assessments/assessment-1/publish") return Promise.resolve({ data: {} });
+      if (url === "/assessments/assessment-1/invite") {
+        // Two candidates selected, but SMTP isn't configured -- 0 actually sent.
+        return Promise.resolve({
+          data: {
+            recipientsSelected: 2, invitationsCreated: 2, emailsAttempted: 2,
+            emailsSent: 0, emailsFailed: 0, smtpConfigured: false,
+            summary: "2 invitation(s) created, but 0 emails sent because SMTP is not configured on this server.",
+            invitations: [{ id: "inv-1", candidateUserId: "cand-1", tokenPreview: "abc123..." }],
+          },
+        });
+      }
+      return Promise.reject(new Error(`Unexpected POST ${url}`));
+    });
+
+    renderWithQueryClient();
+    fireEvent.click(screen.getByRole("button", { name: /publish/i }));
+    await waitFor(() => expect(postMock).toHaveBeenCalledWith("/assessments/assessment-1/publish"));
+
+    fireEvent.click(screen.getByRole("button", { name: /send invitations/i }));
+    await waitFor(() => expect(screen.getByText(/0 emails sent because smtp is not configured/i)).toBeInTheDocument());
+    // The old bug: this used to say "Sent 2 invitation(s) by email" regardless of SMTP outcome.
+    expect(screen.queryByText(/^sent 2 invitation/i)).not.toBeInTheDocument();
+  });
+
   it("refuses to publish and shows a clear message when no approved questions exist for the subject", async () => {
     postMock.mockImplementation((url: string) => {
       if (url === "/assessments") return Promise.resolve({ data: { id: "assessment-1" } });

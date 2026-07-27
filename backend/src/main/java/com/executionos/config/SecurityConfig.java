@@ -97,6 +97,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/skillforge/catalog/**").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/skillforge/organizations/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/skillforge/questions/*/full", "/api/v1/skillforge/questions/import/csv").hasAnyRole("ADMIN", "TRAINER", "EVALUATOR")
+                        .requestMatchers("/api/v1/skillforge/notifications/test-email").hasAnyRole("ADMIN", "TRAINER")
                         .requestMatchers("/api/v1/skillforge/candidate/link/validate").permitAll()
                         .requestMatchers("/api/v1/skillforge/candidate/attempts/**").permitAll()
                         // Everything else under /skillforge is staff tooling (org

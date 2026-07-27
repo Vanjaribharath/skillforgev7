@@ -17,7 +17,7 @@ export default function TrainersPage() {
   const [newTrainer, setNewTrainer] = useState({ fullName: "", email: "" });
   const [message, setMessage] = useState("");
 
-  const { data: trainers = [] } = useQuery({
+  const { data: trainers = [], isLoading: trainersLoading, isError: trainersErrored, error: trainersError, refetch: refetchTrainers } = useQuery({
     queryKey: ["trainers", organizationId],
     queryFn: async () => {
       // See candidates/page.tsx -- same default-20-page-size issue.
@@ -25,6 +25,7 @@ export default function TrainersPage() {
       return res.data?.content || [];
     },
     enabled: !!organizationId,
+    retry: 1,
   });
 
   const addTrainerMutation = useMutation({
@@ -77,6 +78,19 @@ export default function TrainersPage() {
           <h2 className="text-lg font-semibold">Trainers</h2>
           <UserRoundCog className="text-blue" size={20} />
         </div>
+        {trainersErrored ? (
+          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">
+            <p className="font-medium">Couldn't load trainers — this is a real error, not an empty list.</p>
+            <p className="mt-1 text-xs">
+              {(trainersError as any)?.response?.status
+                ? `Server responded ${(trainersError as any).response.status}: ${(trainersError as any).response?.data?.error || (trainersError as any).response?.statusText || "no further detail returned"}`
+                : (trainersError as any)?.message || "Unknown network error."}
+            </p>
+            <Button variant="outline" className="mt-2" onClick={() => refetchTrainers()}>Retry</Button>
+          </div>
+        ) : trainersLoading ? (
+          <div className="text-sm text-muted text-center py-4">Loading trainers…</div>
+        ) : (
         <div className="grid gap-3">
           {trainers.map((trainer: any) => (
             <div key={trainer.id} className="grid gap-3 rounded-md border border-line p-3 md:grid-cols-[1.2fr_1fr_1fr] md:items-center">
@@ -89,9 +103,10 @@ export default function TrainersPage() {
             </div>
           ))}
           {trainers.length === 0 && (
-            <div className="text-sm text-muted text-center py-4">No trainers found.</div>
+            <div className="text-sm text-muted text-center py-4">No trainers found. (The request succeeded — there genuinely aren't any yet.)</div>
           )}
         </div>
+        )}
       </Card>
 
       {showAddModal && (

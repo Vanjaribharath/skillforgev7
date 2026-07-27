@@ -39,7 +39,7 @@ export function AssessmentWorkbench() {
   const [invitations, setInvitations] = useState<string[]>([]);
   const [message, setMessage] = useState("Configure an assessment template, publish it, then send one-time links.");
 
-  const { data: candidates = [] } = useQuery({
+  const { data: candidates = [], isError: candidatesErrored, error: candidatesError } = useQuery({
     queryKey: ["candidates", organizationId],
     queryFn: async () => {
       // This list drives "Send invitations" recipient selection. It was
@@ -51,6 +51,7 @@ export function AssessmentWorkbench() {
       return res.data?.content || [];
     },
     enabled: !!organizationId,
+    retry: 1,
   });
 
   const { data: assessments = [] } = useQuery({
@@ -140,10 +141,19 @@ export function AssessmentWorkbench() {
       return res.data;
     },
     onSuccess: (data: any) => {
-      const list = Array.isArray(data) ? data : Array.isArray(data?.content) ? data.content : [];
-      const tokens = list.map((invite: any) => invite.tokenPreview || `Invite sent to ${invite.candidateUserId}`);
+      // The backend now returns a real batch summary (invitationsCreated,
+      // emailsSent, emailsFailed, smtpConfigured) instead of just a bare
+      // list -- this used to report "Sent N invitation(s) by email" purely
+      // from how many candidates were selected, regardless of whether SMTP
+      // ever actually accepted a single message.
+      const invites = Array.isArray(data?.invitations) ? data.invitations : Array.isArray(data) ? data : [];
+      const tokens = invites.map((invite: any) => invite.tokenPreview || `Invite created for ${invite.candidateUserId}`);
       setInvitations(tokens);
-      setMessage(tokens.length > 0 ? `Sent ${tokens.length} invitation(s) by email. If SMTP isn't configured in this environment, check the backend server logs for the full token/link (search for "SMTP not configured").` : "Invite request succeeded but returned no invitations.");
+      if (typeof data?.summary === "string") {
+        setMessage(data.summary + (data.smtpConfigured === false ? " Set SMTP_HOST/PORT/USERNAME/PASSWORD on the backend to actually deliver these." : (data.emailsFailed > 0 ? " Check Render logs for the exact SMTP error on the failed ones." : "")));
+      } else {
+        setMessage(tokens.length > 0 ? `Created ${tokens.length} invitation(s). Backend didn't return a send summary — check Render logs to confirm delivery.` : "Invite request succeeded but returned no invitations.");
+      }
     },
     onError: (error: any) => {
       setMessage(`Failed to invite: ${error.response?.data?.error || error.message}`);
@@ -179,6 +189,14 @@ export function AssessmentWorkbench() {
   function sendInvitations() {
     if (!published || !activeAssessmentId) {
       setMessage("Publish the assessment before sending candidate invitations.");
+      return;
+    }
+    if (candidatesErrored) {
+      setMessage(`Can't send invitations — the candidate list failed to load (${(candidatesError as any)?.response?.status ? `server responded ${(candidatesError as any).response.status}` : (candidatesError as any)?.message || "unknown error"}). Fix that first — sending now would silently invite 0 people.`);
+      return;
+    }
+    if (candidates.length === 0) {
+      setMessage("No candidates to invite — add candidates first.");
       return;
     }
     inviteMutation.mutate();

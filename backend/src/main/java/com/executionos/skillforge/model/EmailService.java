@@ -22,6 +22,8 @@ class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
+    enum Outcome { SENT, SMTP_NOT_CONFIGURED, FAILED }
+
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final String fromAddress;
 
@@ -31,11 +33,22 @@ class EmailService {
         this.fromAddress = env.getProperty("executionos.mail.from", "no-reply@skillforge.example");
     }
 
-    void send(String to, String subject, String body) {
+    boolean isConfigured() {
+        return mailSenderProvider.getIfAvailable() != null;
+    }
+
+    /**
+     * Returns what actually happened instead of a bare void. Callers that
+     * need to report a truthful "N emails sent" count (invitation batches,
+     * the settings-page test-send action) previously had no way to tell a
+     * real send from a silently-swallowed failure or from SMTP not being
+     * configured at all -- every call looked identical from the outside.
+     */
+    Outcome send(String to, String subject, String body) {
         JavaMailSender sender = mailSenderProvider.getIfAvailable();
         if (sender == null) {
             log.info("SMTP not configured (SMTP_HOST unset) — would have sent email to {}: [{}]\n{}", to, subject, body);
-            return;
+            return Outcome.SMTP_NOT_CONFIGURED;
         }
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -44,10 +57,19 @@ class EmailService {
             message.setSubject(subject);
             message.setText(body);
             sender.send(message);
+            return Outcome.SENT;
         } catch (Exception ex) {
             // Never let an email delivery failure break the calling request
-            // (e.g. a user creation or password reset should still succeed).
-            log.warn("Failed to send email to {}: {}", to, ex.getMessage());
+            // (e.g. a user creation or password reset should still succeed) --
+            // but the caller now gets told it failed, rather than nothing.
+            log.warn("Failed to send email to {}: {}", mask(to), ex.getMessage());
+            return Outcome.FAILED;
         }
+    }
+
+    private static String mask(String email) {
+        int at = email.indexOf('@');
+        if (at <= 1) return "***" + email.substring(Math.max(at, 0));
+        return email.charAt(0) + "***" + email.substring(at);
     }
 }

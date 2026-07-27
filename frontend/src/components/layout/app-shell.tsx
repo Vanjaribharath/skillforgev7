@@ -175,7 +175,7 @@ function ProfileMenu() {
               <button
                 className="mt-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-red-600 hover:bg-surface"
                 onClick={() => {
-                  const refreshToken = typeof window !== "undefined" ? window.localStorage.getItem("executionos.refreshToken") : null;
+                  const refreshToken = typeof window !== "undefined" ? window.sessionStorage.getItem("executionos.refreshToken") : null;
                   if (refreshToken) {
                     api.post("/auth/logout", { refreshToken }).catch(() => {
                       // Best-effort: even if this fails (e.g. already offline),

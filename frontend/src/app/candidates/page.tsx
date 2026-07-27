@@ -18,7 +18,7 @@ export default function CandidatesPage() {
   const [newCandidate, setNewCandidate] = useState({ fullName: "", email: "" });
   const [message, setMessage] = useState("");
 
-  const { data: candidatePage } = useQuery({
+  const { data: candidatePage, isLoading: candidatesLoading, isError: candidatesErrored, error: candidatesError, refetch: refetchCandidates } = useQuery({
     queryKey: ["candidates", organizationId],
     queryFn: async () => {
       // Spring Data's list endpoints default to a page size of 20 when no
@@ -31,6 +31,7 @@ export default function CandidatesPage() {
       return res.data as { content: any[]; totalElements: number };
     },
     enabled: !!organizationId,
+    retry: 1,
   });
   const candidates = candidatePage?.content || [];
   const totalCandidates = candidatePage?.totalElements ?? candidates.length;
@@ -116,7 +117,7 @@ export default function CandidatesPage() {
           <Button onClick={() => setShowAddModal(true)}><Plus size={18} /> Add candidate</Button>
           <Button variant="outline" onClick={() => fileInputRef.current?.click()}><FileSpreadsheet size={18} /> CSV upload</Button>
           <input type="file" ref={fileInputRef} className="hidden" accept=".csv" onChange={handleFileUpload} />
-          <Button variant="outline" onClick={() => setMessage("Reminder emails queued for pending assessments.")}><MailPlus size={18} /> Remind</Button>
+          <Button variant="outline" onClick={() => setMessage("Reminder emails aren't built yet — there's no backend endpoint behind this button. Use \"Send invitations\" on the Assessments page for real email delivery.")}><MailPlus size={18} /> Remind</Button>
         </div>
       </section>
 
@@ -126,13 +127,30 @@ export default function CandidatesPage() {
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold">Candidate history</h2>
-            <p className="text-xs text-muted">
-              Showing {candidates.length} of {totalCandidates} candidate{totalCandidates === 1 ? "" : "s"}
-              {candidates.length < totalCandidates ? " — more exist than are shown below; contact support to raise the page size." : ""}
-            </p>
+            {!candidatesErrored && (
+              <p className="text-xs text-muted">
+                {candidatesLoading
+                  ? "Loading candidates…"
+                  : <>Showing {candidates.length} of {totalCandidates} candidate{totalCandidates === 1 ? "" : "s"}
+                      {candidates.length < totalCandidates ? " — more exist than are shown below; contact support to raise the page size." : ""}</>}
+              </p>
+            )}
           </div>
           <UsersRound className="text-blue" size={20} />
         </div>
+        {candidatesErrored ? (
+          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">
+            <p className="font-medium">Couldn't load candidates — this is a real error, not an empty list.</p>
+            <p className="mt-1 text-xs">
+              {(candidatesError as any)?.response?.status
+                ? `Server responded ${(candidatesError as any).response.status}: ${(candidatesError as any).response?.data?.error || (candidatesError as any).response?.statusText || "no further detail returned"}`
+                : (candidatesError as any)?.message || "Unknown network error."}
+            </p>
+            <Button variant="outline" className="mt-2" onClick={() => refetchCandidates()}>Retry</Button>
+          </div>
+        ) : candidatesLoading ? (
+          <div className="text-sm text-muted text-center py-4">Loading candidates…</div>
+        ) : (
         <div className="grid gap-3">
           {candidates.map((candidate: any) => (
             <div key={candidate.id} className="grid gap-3 rounded-md border border-line p-3 md:grid-cols-[1.2fr_1fr_1fr] md:items-center">
@@ -145,9 +163,10 @@ export default function CandidatesPage() {
             </div>
           ))}
           {candidates.length === 0 && (
-            <div className="text-sm text-muted text-center py-4">No candidates found.</div>
+            <div className="text-sm text-muted text-center py-4">No candidates found. (The request succeeded — this organization genuinely has none yet.)</div>
           )}
         </div>
+        )}
       </Card>
 
       {showAddModal && (

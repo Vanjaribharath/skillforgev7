@@ -20,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Application service for SkillForge organization, question, assessment, invitation, attempt, and reporting workflows.
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class SkillForgeService {
+    private static final Logger log = LoggerFactory.getLogger(SkillForgeService.class);
     private final SfOrganizationRepository organizations;
     private final SfUserRepository users;
     private final SfDepartmentRepository departments;
@@ -528,12 +531,18 @@ public class SkillForgeService {
         return assessmentResponse(assessments.save(assessment));
     }
 
-    public List<InviteResponse> inviteCandidates(UUID assessmentId, InviteRequest request) {
+    public InviteBatchResponse inviteCandidates(UUID assessmentId, InviteRequest request) {
         SfAssessment assessment = requireAssessment(assessmentId);
         Instant expiresAt = request.expiresAt() == null
                 ? valueOr(assessment.getEndAt(), Instant.now().plusSeconds(7 * 24 * 3600))
                 : request.expiresAt();
-        return request.candidateUserIds().stream().map(candidateId -> {
+        boolean smtpConfigured = emailService.isConfigured();
+        int recipientsSelected = request.candidateUserIds().size();
+        log.info("Invitation batch started: assessmentId={} recipients={} smtpConfigured={}", assessmentId, recipientsSelected, smtpConfigured);
+
+        int[] sent = {0};
+        int[] failed = {0};
+        List<InviteResponse> results = request.candidateUserIds().stream().map(candidateId -> {
             SfUser candidate = users.findById(candidateId).orElseThrow();
             if (!candidate.getOrganizationId().equals(assessment.getOrganizationId())) {
                 throw new IllegalArgumentException("Candidate belongs to a different organization");
@@ -546,30 +555,55 @@ public class SkillForgeService {
             invitation.setTokenHash(hash(token));
             invitation.setExpiresAt(expiresAt);
             invitation.setStatus(InvitationStatus.SENT);
-            invitation.setEmailStatus("QUEUED");
             invitation.setSentAt(Instant.now());
-            invitation = invitations.save(invitation);
 
-            // The plaintext token exists only in this method's stack frame --
-            // tokenHash is one-way, so this is the only point in the entire
-            // application where it's ever recoverable. Previously nothing
-            // sent it anywhere (emailStatus was set to "QUEUED" as a string
-            // with no queue behind it), so a candidate invitation was a dead
-            // end: no email, no log, no way for anyone to actually start the
-            // assessment. This routes it through the same EmailService every
-            // other transactional message uses -- with real SMTP configured
-            // it emails the candidate a real link; without SMTP configured
-            // (e.g. local/dev), it logs the full token/link at INFO level on
-            // the backend so a trainer can retrieve it from server logs.
             String candidateLink = frontendBaseUrl + "/candidate?token=" + token;
-            emailService.send(candidate.getEmail(), "You're invited to " + assessment.getTitle(),
+            EmailService.Outcome outcome = emailService.send(candidate.getEmail(), "You're invited to " + assessment.getTitle(),
                     "You've been invited to take \"" + assessment.getTitle() + "\".\n\n"
                             + "Open this link to begin: " + candidateLink + "\n\n"
                             + "Or open the Test Player and paste this invitation token: " + token + "\n\n"
                             + "This link expires " + expiresAt + ".");
+            invitation.setEmailStatus(outcome.name());
+            if (outcome == EmailService.Outcome.SENT) {
+                sent[0]++;
+            } else if (outcome == EmailService.Outcome.FAILED) {
+                failed[0]++;
+            }
+            invitation = invitations.save(invitation);
+            log.info("Invitation email outcome: assessmentId={} candidateId={} outcome={}", assessmentId, candidateId, outcome);
 
             return new InviteResponse(invitation.getId(), candidateId, token.substring(0, 12) + "...", expiresAt);
         }).toList();
+
+        int notConfiguredCount = recipientsSelected - sent[0] - failed[0];
+        String summary;
+        if (!smtpConfigured) {
+            summary = recipientsSelected + " invitation(s) created, but 0 emails sent because SMTP is not configured on this server.";
+        } else if (failed[0] == 0) {
+            summary = recipientsSelected + " invitation(s) created. " + sent[0] + " email(s) sent.";
+        } else {
+            summary = recipientsSelected + " invitation(s) created. " + sent[0] + " email(s) sent, " + failed[0] + " failed.";
+        }
+        log.info("Invitation batch finished: assessmentId={} created={} sent={} failed={} notConfigured={}",
+                assessmentId, recipientsSelected, sent[0], failed[0], notConfiguredCount);
+
+        return new InviteBatchResponse(recipientsSelected, recipientsSelected, recipientsSelected, sent[0], failed[0], smtpConfigured, summary, results);
+    }
+
+    /** Admin/Trainer-only diagnostic — sends one real email to the caller's own address so a
+     * misconfigured SMTP setup can be confirmed without waiting for a real candidate invite. */
+    public TestEmailResponse sendTestEmail(String toEmail) {
+        boolean configured = emailService.isConfigured();
+        if (!configured) {
+            return new TestEmailResponse(false, false, "SMTP is not configured (SMTP_HOST is unset on the backend) — nothing was sent.");
+        }
+        EmailService.Outcome outcome = emailService.send(toEmail, "SkillForge SMTP test",
+                "This is a test email from SkillForge to confirm SMTP delivery is working. Sent at " + Instant.now() + ".");
+        return switch (outcome) {
+            case SENT -> new TestEmailResponse(true, true, "Sent to " + toEmail + " — check that inbox (and spam folder).");
+            case FAILED -> new TestEmailResponse(false, true, "SMTP is configured but the send failed — check Render logs for the exact SMTP error.");
+            case SMTP_NOT_CONFIGURED -> new TestEmailResponse(false, false, "SMTP is not configured.");
+        };
     }
 
     public ValidateLinkResponse validateLink(ValidateLinkRequest request) {
