@@ -15,7 +15,7 @@ import com.executionos.controller.ResourceControllers;
         ResourceControllers.AttachmentController.class,
         ResourceControllers.KnowledgeController.class,
         ResourceControllers.JournalController.class,
-        ResourceControllers.ReadModelController.class,
+        // ResourceControllers.ReadModelController.class,
         ResourceControllers.AdminController.class
 })
 @SpringBootApplication
